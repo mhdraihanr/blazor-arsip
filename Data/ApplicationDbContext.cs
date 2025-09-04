@@ -32,7 +32,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.UploadedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
             entity.Property(e => e.IsPublic).IsRequired().HasDefaultValue(false);
-            entity.Property(e => e.DownloadCount).HasDefaultValue(0);
             
             entity.HasIndex(e => e.FileName);
             entity.HasIndex(e => e.Category);

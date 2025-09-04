@@ -56,8 +56,7 @@ public class FileController : ControllerBase
             await _fileService.LogActivityAsync(id, "Download", "Anonymous", 
                 $"File '{fileRecord.OriginalFileName}' downloaded", ipAddress, userAgent);
 
-            // Update download count
-            fileRecord.DownloadCount++;
+            // Update last accessed time
             fileRecord.LastAccessedAt = DateTime.UtcNow;
             await _fileService.UpdateFileAsync(fileRecord);
 

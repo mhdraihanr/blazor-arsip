@@ -154,8 +154,8 @@
                 {
                     <!-- List View -->
                     <div class="table-responsive">
-                        <QuickGrid Items="@viewModel.FilteredFiles.Skip((viewModel.CurrentPage - 1) * viewModel.PageSize).Take(viewModel.PageSize).AsQueryable()" Class="table table-striped table-hover table-sm list-table">
-                            <TemplateColumn Title="" Class="text-center">
+                        <QuickGrid Items="@viewModel.FilteredFiles.Skip((viewModel.CurrentPage - 1) * viewModel.PageSize).Take(viewModel.PageSize).AsQueryable()" Class="table table-striped table-hover table-sm list-table responsive-table">
+                            <TemplateColumn Title="" Class="text-center ">
                                 <ChildContent>
                                     <div class="file-icon-small">
                                         @((MarkupString)FileListViewModel.GetFileIcon(context.FileExtension))
@@ -177,30 +177,25 @@
                             </TemplateColumn>
                             <TemplateColumn Title="Category" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.Category))">
                                 <ChildContent>
-                                    <span class="badge bg-primary fs-8">@context.Category</span>
+                                    <span class="badge bg-primary fs-9">@context.Category</span>
                                 </ChildContent>
                             </TemplateColumn>
                             <TemplateColumn Title="Size" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.FileSize))">
                                 <ChildContent>
-                                    <span class="fs-7 text-muted">@FileListViewModel.FormatFileSize(context.FileSize)</span>
+                                    <span class="fs-9 text-muted">@FileListViewModel.FormatFileSize(context.FileSize)</span>
                                 </ChildContent>
                             </TemplateColumn>
                             <TemplateColumn Title="Uploaded By" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.UploadedBy))">
                                 <ChildContent>
-                                    <span class="fs-7">@context.UploadedBy</span>
+                                    <span class="fs-9">@context.UploadedBy</span>
                                 </ChildContent>
                             </TemplateColumn>
                             <TemplateColumn Title="Upload Date" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.UploadedAt))">
                                 <ChildContent>
                                     <div class="d-flex flex-column">
-                                        <span class="fs-7">@context.UploadedAt.ToString("MMM dd, yyyy")</span>
-                                        <small class="text-muted">@context.UploadedAt.ToString("HH:mm")</small>
+                                        <span class="fs-9">@context.UploadedAt.ToString("MMM dd, yyyy")</span>
+                                        <small class="text-muted fs-9">@context.UploadedAt.ToString("HH:mm")</small>
                                     </div>
-                                </ChildContent>
-                            </TemplateColumn>
-                            <TemplateColumn Title="Downloads" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.DownloadCount))">
-                                <ChildContent>
-                                    <span class="fs-7 text-muted">@context.DownloadCount</span>
                                 </ChildContent>
                             </TemplateColumn>
                             <TemplateColumn Title="Actions">

@@ -194,7 +194,7 @@
 
         <div class="row">
             <!-- Category Distribution -->
-            <div class="col-xl-8 col-lg-7">
+            <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Category Distribution</h6>
@@ -205,7 +205,7 @@
                             <div class="row">
                                 @foreach (var category in viewModel.CategoryStats)
                                 {
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-12 mb-3">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span>@category.Category</span>
                                             <span class="badge bg-primary">@category.Count files</span>
@@ -226,7 +226,7 @@
             </div>
 
             <!-- Recent Activities -->
-            <div class="col-xl-4 col-lg-5">
+            <div class="col-xl-6 col-lg-6">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
@@ -236,7 +236,7 @@
                         @if (viewModel.RecentActivities.Any())
                         {
                             <div class="list-group list-group-flush">
-                                @foreach (var activity in viewModel.RecentActivities.Take(8))
+                                @foreach (var activity in viewModel.RecentActivities.Take(3))
                                 {
                                     <div class="list-group-item border-0 px-0 py-3">
                                         <div class="d-flex align-items-start">

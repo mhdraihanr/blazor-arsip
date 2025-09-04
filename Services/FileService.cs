@@ -181,12 +181,31 @@ public class FileService : IFileService
         var fileRecord = await GetFileByIdAsync(id);
         if (fileRecord == null) return false;
 
+        // Get file path before soft delete
+        var filePath = await GetFilePathAsync(id);
+        
         // Soft delete
         fileRecord.IsActive = false;
         fileRecord.ModifiedAt = DateTime.UtcNow;
         
         await _context.SaveChangesAsync();
-        await LogActivityAsync(id, "Delete", "System", "File deleted");
+        
+        // Delete physical file if it exists
+        if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+        {
+            try
+            {
+                File.Delete(filePath);
+                _logger.LogInformation($"Physical file deleted: {filePath}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting physical file: {filePath}");
+                // Continue execution even if physical file deletion fails
+            }
+        }
+        
+        await LogActivityAsync(id, "Delete", "System", "File deleted (including physical file)");
 
         _logger.LogInformation($"File deleted: {fileRecord.OriginalFileName} (ID: {id})");
         return true;
@@ -245,7 +264,7 @@ public class FileService : IFileService
         var totalFiles = await _context.FileRecords.CountAsync(f => f.IsActive);
         var totalSize = await _context.FileRecords.Where(f => f.IsActive).SumAsync(f => f.FileSize);
         var todayUploads = await _context.FileRecords.CountAsync(f => f.IsActive && f.UploadedAt.Date == DateTime.UtcNow.Date);
-        var totalDownloads = await _context.FileRecords.Where(f => f.IsActive).SumAsync(f => f.DownloadCount);
+        var totalDownloads = 0; // Downloads tracking removed
         
         var categoryStats = await _context.FileRecords
             .Where(f => f.IsActive)

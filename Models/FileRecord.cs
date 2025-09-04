@@ -62,8 +62,6 @@ public class FileRecord
     [StringLength(32)]
     public string? FileHash { get; set; }
 
-    public int DownloadCount { get; set; } = 0;
-
     public DateTime? LastAccessedAt { get; set; }
 
     // Navigation properties
