@@ -190,18 +190,22 @@ public class FileListViewModel
     }
 
 
-    public static string GetFileIcon(string extension)
+    public static string GetFileIcon(string fileName)
     {
-        return extension.ToLower() switch
+        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+        return extension switch
         {
-            ".pdf" => "<i class='fas fa-file-pdf'></i>",
-            ".doc" or ".docx" => "<i class='fas fa-file-word'></i>",
-            ".xls" or ".xlsx" => "<i class='fas fa-file-excel'></i>",
-            ".ppt" or ".pptx" => "<i class='fas fa-file-powerpoint'></i>",
-            ".jpg" or ".jpeg" or ".png" or ".gif" => "<i class='fas fa-file-image'></i>",
-            ".zip" or ".rar" or ".7z" => "<i class='fas fa-file-archive'></i>",
-            ".txt" => "<i class='fas fa-file-alt'></i>",
-            _ => "<i class='fas fa-file'></i>"
+            ".pdf" => "fas fa-file-pdf",
+            ".doc" or ".docx" => "fas fa-file-word",
+            ".xls" or ".xlsx" => "fas fa-file-excel",
+            ".ppt" or ".pptx" => "fas fa-file-powerpoint",
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".webp" => "fas fa-file-image",
+            ".mp4" or ".avi" or ".mov" or ".wmv" or ".flv" => "fas fa-file-video",
+            ".mp3" or ".wav" or ".flac" or ".aac" => "fas fa-file-audio",
+            ".zip" or ".rar" or ".7z" or ".tar" or ".gz" => "fas fa-file-archive",
+            ".txt" or ".rtf" => "fas fa-file-alt",
+            ".csv" => "fas fa-file-csv",
+            _ => "fas fa-file"
         };
     }
 

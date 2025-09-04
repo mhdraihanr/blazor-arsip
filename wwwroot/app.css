@@ -642,10 +642,6 @@ html[data-theme="dark"] *,
   color: #ffffff !important;
 }
 
-[data-theme="dark"] main .top-row.px-4 i {
-  color: #ffffff !important;
-}
-
 /* NavMenu top-row styling for dark mode - keep original */
 [data-theme="dark"] .sidebar .top-row {
   background-color: rgba(0, 0, 0, 0.4) !important;
@@ -919,10 +915,6 @@ html[data-theme="dark"] *,
   color: #888888 !important;
 }
 
-[data-theme="dark"] .badge {
-  color: #ffffff !important;
-}
-
 [data-theme="dark"] .alert {
   border-color: #404040 !important;
 }
@@ -1177,6 +1169,38 @@ html[data-theme="dark"] div,
 /* Override Bootstrap default colors in dark mode */
 html[data-theme="dark"] .text-dark,
 [data-theme="dark"] .text-dark {
+  color: #e0e0e0 !important;
+}
+
+/* Dark Mode Drop Zone Styles */
+[data-theme="dark"] .drop-zone {
+  background-color: #2a2a2a !important;
+  border-color: #4a5568 !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .drop-zone:hover,
+[data-theme="dark"] .drop-zone.drag-over {
+  background-color: #374151 !important;
+  border-color: #4299e1 !important;
+}
+
+[data-theme="dark"] .drop-zone-content {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .drop-zone-content .text-muted {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .selected-files {
+  background-color: #2a2a2a !important;
+  border-color: #4a5568 !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .selected-file-item {
+  border-bottom-color: #4a5568 !important;
   color: #e0e0e0 !important;
 }
 

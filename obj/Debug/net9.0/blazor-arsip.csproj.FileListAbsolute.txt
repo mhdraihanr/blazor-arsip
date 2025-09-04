@@ -163,11 +163,9 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\r1xy7ge53h-d7shbmvgxk.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\qer56qs83c-ausgxo2sd3.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\j5hez3y703-k8d9w2qqmf.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\ipp3dmwv2d-cosvhxvwiu.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\i5zu8oi3vu-ub07r2b239.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1tf7lk7ghz-fvhpjtyr6v.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\5exwwh6ldl-b7pk76d08c.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\l0ylmgshn0-fsbi9cje9m.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\eh50100i39-rzd6atqjts.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\eh9552ibtx-ee0r1s7dh0.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\t2fuot46fg-dxx9fxp4il.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\e1sasgvskf-jd9uben2k1.gz
@@ -179,11 +177,9 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\pjlm7a8w4h-tdbxkamptv.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\725iod6xov-j5mq2jizvt.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\23z4aslk6j-06098lyss8.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\g6eyztvnlt-nvvlpmu67g.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\z6t8xdqzsc-s35ty4nyc5.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\8qu8d0m6gm-pj5nd1wqec.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\0h55j9vbhc-46ein0sx1k.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\jjvsbe3na0-v0zj4ognzu.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\zkk2wadahm-37tfw0ft22.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\k9rau93zay-hrwsygsryq.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\7prbnp9mk0-pk9g2wxc8p.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\booiprrcge-ft3s53vfgj.gz
@@ -214,5 +210,9 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\Components\Shared\Confirmati
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\Components\Shared\ToastContainer.razor.rz.scp.css
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\Components\Pages\FileManagement\List\FileList.razor.rz.scp.css
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\072u7tw7bk-wzhn1bszyi.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-qid327x10v.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-ezhhv8h9z3.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\zkk2wadahm-wh3vimjjjx.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\z6t8xdqzsc-jxgolfgs9z.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\eh50100i39-favcg3564o.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\i5zu8oi3vu-on5b2clfr3.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-m12ojdao2g.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-9l87fqnruh.gz
