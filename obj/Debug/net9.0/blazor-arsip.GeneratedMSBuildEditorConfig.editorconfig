@@ -17,61 +17,61 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = blazor_arsip
 build_property.RootNamespace = blazor_arsip
-build_property.ProjectDir = D:\a-csharp\blazor-arsip\
+build_property.ProjectDir = d:\a-csharp\blazor-arsip\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\a-csharp\blazor-arsip
+build_property.MSBuildProjectDirectory = d:\a-csharp\blazor-arsip
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[D:/a-csharp/blazor-arsip/Components/App.razor]
+[d:/a-csharp/blazor-arsip/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/a-csharp/blazor-arsip/Components/Pages/Dashboard/Dashboard.razor]
+[d:/a-csharp/blazor-arsip/Components/Pages/Dashboard/Dashboard.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmRcRGFzaGJvYXJkLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/a-csharp/blazor-arsip/Components/Pages/FileManagement/Edit/EditFile.razor]
+[d:/a-csharp/blazor-arsip/Components/Pages/FileManagement/Edit/EditFile.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGaWxlTWFuYWdlbWVudFxFZGl0XEVkaXRGaWxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/a-csharp/blazor-arsip/Components/Pages/FileManagement/Upload/FileUpload.razor]
+[d:/a-csharp/blazor-arsip/Components/Pages/FileManagement/Upload/FileUpload.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGaWxlTWFuYWdlbWVudFxVcGxvYWRcRmlsZVVwbG9hZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/a-csharp/blazor-arsip/Components/Pages/FileManagement/View/FileView.razor]
+[d:/a-csharp/blazor-arsip/Components/Pages/FileManagement/View/FileView.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGaWxlTWFuYWdlbWVudFxWaWV3XEZpbGVWaWV3LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/a-csharp/blazor-arsip/Components/Routes.razor]
+[d:/a-csharp/blazor-arsip/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/a-csharp/blazor-arsip/Components/_Imports.razor]
+[d:/a-csharp/blazor-arsip/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/a-csharp/blazor-arsip/Components/Layout/MainLayout.razor]
+[d:/a-csharp/blazor-arsip/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-8ip4icgmi4
 
-[D:/a-csharp/blazor-arsip/Components/Layout/NavMenu.razor]
+[d:/a-csharp/blazor-arsip/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-077a58kz1y
 
-[D:/a-csharp/blazor-arsip/Components/Pages/FileManagement/List/FileList.razor]
+[d:/a-csharp/blazor-arsip/Components/Pages/FileManagement/List/FileList.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGaWxlTWFuYWdlbWVudFxMaXN0XEZpbGVMaXN0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-37d5y5dnrg
 
-[D:/a-csharp/blazor-arsip/Components/Shared/ConfirmationDialog.razor]
+[d:/a-csharp/blazor-arsip/Components/Shared/ConfirmationDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcQ29uZmlybWF0aW9uRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-x567536zt6
 
-[D:/a-csharp/blazor-arsip/Components/Shared/ToastContainer.razor]
+[d:/a-csharp/blazor-arsip/Components/Shared/ToastContainer.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcVG9hc3RDb250YWluZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-ewn6045cag
