@@ -1,0 +1,263 @@
+@page "/list"
+@using blazor_arsip.Services
+@using blazor_arsip.Models
+@using blazor_arsip.Components.Pages.FileManagement.List
+@using blazor_arsip.Components.Shared
+@using Microsoft.AspNetCore.Components.QuickGrid
+@rendermode InteractiveServer
+@inherits FileListBase
+
+<PageTitle>File List - Arsip Digital</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h4 text-gray-800 mb-0">File List</h1>
+                <a href="/upload" class="btn btn-primary btn-sm">
+                    <i class="fas fa-upload me-2"></i>Upload New File
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="card shadow mb-3">
+        <div class="card-header py-2">
+            <h6 class="m-0 font-weight-bold text-primary fs-6">Search & Filter</h6>
+        </div>
+        <div class="card-body py-3">
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <label for="searchTerm" class="form-label fs-7">Search Files</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" id="searchTerm" @bind="viewModel.SearchTerm" @onkeypress="viewModel.OnSearchKeyPressAsync" placeholder="Search by filename, description, or tags...">
+                        <button class="btn btn-outline-secondary" type="button" @onclick="viewModel.SearchFilesAsync">
+                            <i class="fas fa-search fs-8"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label for="categoryFilter" class="form-label fs-7">Category</label>
+                    <select class="form-select form-select-sm" id="categoryFilter" @bind="viewModel.SelectedCategory" @bind:event="onchange">
+                        <option value="">All Categories</option>
+                        @foreach (var category in viewModel.Categories)
+                        {
+                            <option value="@category.Name">@category.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label for="fromDate" class="form-label fs-7">From Date</label>
+                    <input type="date" class="form-control form-control-sm" id="fromDate" @bind="viewModel.FromDate" @bind:event="onchange">
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label for="toDate" class="form-label fs-7">To Date</label>
+                    <input type="date" class="form-control form-control-sm" id="toDate" @bind="viewModel.ToDate" @bind:event="onchange">
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label fs-7">&nbsp;</label>
+                    <div class="d-grid">
+                        <button class="btn btn-secondary btn-sm" @onclick="viewModel.ClearFiltersAsync">
+                            <i class="fas fa-times me-1 fs-8"></i>Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="card shadow mb-3">
+        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary fs-6">Files (@viewModel.FilteredFiles.Count() results)</h6>
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center">
+                    <label class="me-2 fs-7">Items per page:</label>
+                    <select class="form-select form-select-sm" style="width: auto;" @bind="viewModel.PageSize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="d-flex align-items-center">
+                    <label class="me-2 fs-7">View:</label>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-xs @(viewModel.IsGridView ? "active" : "")" @onclick="() => viewModel.SetViewMode(true)">
+                            <i class="fas fa-th fs-8 me-1"></i>Grid
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-xs @(!viewModel.IsGridView ? "active" : "")" @onclick="() => viewModel.SetViewMode(false)">
+                            <i class="fas fa-list fs-8 me-1"></i>List
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (viewModel.IsLoading)
+            {
+                <div class="d-flex justify-content-center py-4">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            }
+            else if (!viewModel.FilteredFiles.Any())
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-folder-open fa-2x text-muted mb-3"></i>
+                    <h6 class="text-muted">No files found</h6>
+                    <p class="text-muted fs-7">Try adjusting your search criteria or upload some files.</p>
+                    <a href="/upload" class="btn btn-primary btn-sm">
+                        <i class="fas fa-upload me-2 fs-8"></i>Upload Files
+                    </a>
+                </div>
+            }
+            else
+            {
+                @if (viewModel.IsGridView)
+                {
+                    <!-- Grid View -->
+                    <div class="row">
+                        @foreach (var file in viewModel.FilteredFiles.Skip((viewModel.CurrentPage - 1) * viewModel.PageSize).Take(viewModel.PageSize))
+                        {
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <div class="card h-100 file-card" style="cursor: pointer;" @onclick="() => viewModel.ViewFile(file.Id)" @onclick:preventDefault="false">
+                                    <div class="card-body text-center p-3">
+                                        <div class="file-icon mb-2">
+                                            @((MarkupString)FileListViewModel.GetFileIcon(file.FileExtension))
+                                        </div>
+                                        <h6 class="card-title fs-7 mb-1" title="@file.OriginalFileName">@FileListViewModel.TruncateFileName(file.OriginalFileName, 18)</h6>
+                                        <p class="card-text fs-8 text-muted mb-1">@FileListViewModel.FormatFileSize(file.FileSize)</p>
+                                        <p class="card-text fs-8 text-muted">@file.UploadedAt.ToString("MMM dd, yyyy")</p>
+                                    </div>
+                                    <div class="card-footer p-2">
+                                        <div class="btn-group w-100" role="group">
+                                            <button class="btn btn-xs btn-outline-primary" @onclick:stopPropagation="true" @onclick="() => viewModel.DownloadFileAsync(file.Id)" title="Download">
+                                                <i class="fas fa-download fs-8"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-outline-secondary" @onclick:stopPropagation="true" @onclick="() => viewModel.EditFile(file.Id)" title="Edit">
+                                                <i class="fas fa-edit fs-8"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-outline-danger" @onclick:stopPropagation="true" @onclick="() => viewModel.DeleteFileAsync(file.Id, confirmationDialog)" title="Delete">
+                                                <i class="fas fa-trash fs-8"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <!-- List View -->
+                    <div class="table-responsive">
+                        <QuickGrid Items="@viewModel.FilteredFiles.Skip((viewModel.CurrentPage - 1) * viewModel.PageSize).Take(viewModel.PageSize).AsQueryable()" Class="table table-striped table-hover table-sm list-table">
+                            <TemplateColumn Title="" Class="text-center">
+                                <ChildContent>
+                                    <div class="file-icon-small">
+                                        @((MarkupString)FileListViewModel.GetFileIcon(context.FileExtension))
+                                    </div>
+                                </ChildContent>
+                            </TemplateColumn>
+                            <TemplateColumn Title="File Name" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.OriginalFileName))">
+                                <ChildContent>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-medium text-primary file-name-text" style="cursor: pointer;" title="@context.OriginalFileName" @onclick="() => viewModel.ViewFile(context.Id)">@context.OriginalFileName</span>
+                                        <small class="text-muted">@context.FileExtension.ToUpper()</small>
+                                    </div>
+                                </ChildContent>
+                                <ColumnOptions>
+                                    <div class="search-box">
+                                        <input placeholder="Filter by name..." @bind="viewModel.NameFilter" @bind:event="oninput" class="form-control form-control-sm" />
+                                    </div>
+                                </ColumnOptions>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Category" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.Category))">
+                                <ChildContent>
+                                    <span class="badge bg-primary fs-8">@context.Category</span>
+                                </ChildContent>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Size" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.FileSize))">
+                                <ChildContent>
+                                    <span class="fs-7 text-muted">@FileListViewModel.FormatFileSize(context.FileSize)</span>
+                                </ChildContent>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Uploaded By" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.UploadedBy))">
+                                <ChildContent>
+                                    <span class="fs-7">@context.UploadedBy</span>
+                                </ChildContent>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Upload Date" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.UploadedAt))">
+                                <ChildContent>
+                                    <div class="d-flex flex-column">
+                                        <span class="fs-7">@context.UploadedAt.ToString("MMM dd, yyyy")</span>
+                                        <small class="text-muted">@context.UploadedAt.ToString("HH:mm")</small>
+                                    </div>
+                                </ChildContent>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Downloads" Sortable="true" SortBy="@(GridSort<FileRecord>.ByAscending(f => f.DownloadCount))">
+                                <ChildContent>
+                                    <span class="fs-7 text-muted">@context.DownloadCount</span>
+                                </ChildContent>
+                            </TemplateColumn>
+                            <TemplateColumn Title="Actions">
+                                <ChildContent>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-xs btn-outline-primary" @onclick="() => viewModel.ViewFile(context.Id)" title="View">
+                                            <i class="fas fa-eye fs-8"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-outline-success" @onclick="() => viewModel.DownloadFileAsync(context.Id)" title="Download">
+                                            <i class="fas fa-download fs-8"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-outline-secondary" @onclick="() => viewModel.EditFile(context.Id)" title="Edit">
+                                            <i class="fas fa-edit fs-8"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-outline-danger" @onclick="() => viewModel.DeleteFileAsync(context.Id, confirmationDialog)" title="Delete">
+                                            <i class="fas fa-trash fs-8"></i>
+                                        </button>
+                                    </div>
+                                </ChildContent>
+                            </TemplateColumn>
+                        </QuickGrid>
+                    </div>
+                }
+
+                <!-- Pagination -->
+                @if (viewModel.TotalPages > 1)
+                {
+                    <nav aria-label="File list pagination" class="mt-3">
+                        <ul class="pagination pagination-sm justify-content-center">
+                            <li class="page-item @(viewModel.CurrentPage == 1 ? "disabled" : "")">
+                                <button class="page-link" @onclick="() => viewModel.ChangePage(viewModel.CurrentPage - 1)" disabled="@(viewModel.CurrentPage == 1)">
+                                    <i class="fas fa-chevron-left fs-8"></i>
+                                </button>
+                            </li>
+                            @for (int i = Math.Max(1, viewModel.CurrentPage - 2); i <= Math.Min(viewModel.TotalPages, viewModel.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == viewModel.CurrentPage ? "active" : "")">
+                                    <button class="page-link fs-7" @onclick="() => viewModel.ChangePage(i)">@i</button>
+                                </li>
+                            }
+                            <li class="page-item @(viewModel.CurrentPage == viewModel.TotalPages ? "disabled" : "")">
+                                <button class="page-link" @onclick="() => viewModel.ChangePage(viewModel.CurrentPage + 1)" disabled="@(viewModel.CurrentPage == viewModel.TotalPages)">
+                                    <i class="fas fa-chevron-right fs-8"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<ConfirmationDialog @ref="confirmationDialog" />
+<ToastContainer />
+
+@code {
+    // Component logic is now handled in FileListBase.cs
+}

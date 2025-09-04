@@ -1,0 +1,307 @@
+@page "/upload"
+@using blazor_arsip.Models
+@using blazor_arsip.Services
+@using blazor_arsip.Components.Pages.FileManagement.Upload
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+@inherits FileUploadBase
+
+<PageTitle>Upload Files - Arsip Digital</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-gray-800">Upload Files</h1>
+                <a href="/list" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">File Upload</h6>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            @viewModel.ErrorMessage
+                            <button type="button" class="btn-close" @onclick="() => viewModel.ErrorMessage = string.Empty"></button>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(viewModel.SuccessMessage))
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            @viewModel.SuccessMessage
+                            <button type="button" class="btn-close" @onclick="() => viewModel.SuccessMessage = string.Empty"></button>
+                        </div>
+                    }
+
+                    <EditForm Model="@viewModel.UploadModel" OnValidSubmit="@HandleValidSubmitAsync">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+
+                        <!-- File Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select Files</label>
+                            <div id="dropZone" class="drop-zone @(viewModel.IsDragOver ? "drag-over" : "")" 
+                                 @ondrop="@HandleDrop" 
+                                 @ondrop:preventDefault="true"
+                                 @ondragover="@HandleDragOver" 
+                                 @ondragover:preventDefault="true"
+                                 @ondragenter="@HandleDragEnter" 
+                                 @ondragleave="@HandleDragLeave"
+                                 @onclick="TriggerFileInput">
+                                <div class="drop-zone-content">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">Drag & Drop files here</h5>
+                                    <p class="text-muted mb-3">or</p>
+                                    <InputFile @ref="fileInputRef" OnChange="@HandleFileSelection" multiple class="d-none" id="fileInput" />
+                                    <label for="fileInput" class="btn btn-primary mb-2" style="cursor: pointer;">
+                                        <i class="fas fa-folder-open me-2"></i>Browse Files
+                                    </label>
+                                    <br>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" @onclick="TriggerFileInput">
+                                        <i class="fas fa-mouse-pointer me-2"></i>Click to Select
+                                    </button>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Supported formats: @string.Join(", ", viewModel.AllowedExtensions)
+                                <br>
+                                Maximum file size: @FileUploadViewModel.FormatFileSize(viewModel.MaxFileSize)
+                            </small>
+                        </div>
+
+                        <!-- Selected Files -->
+                        @if (viewModel.SelectedFiles.Any())
+                        {
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Selected Files (@viewModel.SelectedFiles.Count)</label>
+                                <div class="selected-files">
+                                    @foreach (var file in viewModel.SelectedFiles)
+                                    {
+                                        <div class="selected-file-item">
+                                            <div class="d-flex align-items-center">
+                                                <div class="file-icon me-3">
+                                                    <i class="@FileUploadViewModel.GetFileIcon(file.Name) fa-2x text-primary"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-bold">@file.Name</div>
+                                                    <div class="text-muted small">@FileUploadViewModel.FormatFileSize(file.Size)</div>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemoveFile(file)">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            @if (viewModel.UploadProgress.ContainsKey(file.Name))
+                                            {
+                                                <div class="progress mt-2">
+                                                    <div class="progress-bar" role="progressbar" style="width: @(viewModel.UploadProgress[file.Name])%" 
+                                                         aria-valuenow="@viewModel.UploadProgress[file.Name]" aria-valuemin="0" aria-valuemax="100">
+                                                        @viewModel.UploadProgress[file.Name]%
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- File Details -->
+                        @if (viewModel.SelectedFiles.Any())
+                        {
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="category" class="form-label fw-bold">Category</label>
+                                    <InputSelect @bind-Value="viewModel.UploadModel.Category" class="form-select" id="category">
+                                        <option value="">Select Category</option>
+                                        @foreach (var category in viewModel.Categories)
+                                        {
+                                            <option value="@category.Name">@category.Name</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => viewModel.UploadModel.Category)" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="tags" class="form-label fw-bold">Tags</label>
+                                    <InputText @bind-Value="viewModel.UploadModel.Tags" class="form-control" id="tags" placeholder="Enter tags separated by commas" />
+                                    <small class="form-text text-muted">Separate multiple tags with commas</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-bold">Description</label>
+                                <InputTextArea @bind-Value="viewModel.UploadModel.Description" class="form-control" id="description" rows="3" placeholder="Enter file description (optional)" />
+                            </div>
+
+                            <!-- Upload Actions -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <button type="button" class="btn btn-outline-secondary me-2" @onclick="ClearSelection">
+                                        <i class="fas fa-times me-2"></i>Clear All
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-primary" disabled="@viewModel.IsUploading">
+                                        @if (viewModel.IsUploading)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                            <span>Uploading...</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-upload me-2"></i>
+                                            <span>Upload Files</span>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </EditForm>
+                </div>
+            </div>
+
+            <!-- Upload Guidelines -->
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">Upload Guidelines</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-success"><i class="fas fa-check-circle me-2"></i>Supported File Types</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-file-pdf text-danger me-2"></i>PDF Documents (.pdf)</li>
+                                <li><i class="fas fa-file-word text-primary me-2"></i>Word Documents (.doc, .docx)</li>
+                                <li><i class="fas fa-file-excel text-success me-2"></i>Excel Spreadsheets (.xls, .xlsx)</li>
+                                <li><i class="fas fa-file-powerpoint text-warning me-2"></i>PowerPoint (.ppt, .pptx)</li>
+                                <li><i class="fas fa-file-image text-info me-2"></i>Images (.jpg, .jpeg, .png, .gif)</li>
+                                <li><i class="fas fa-file-archive text-secondary me-2"></i>Archives (.zip, .rar, .7z)</li>
+                                <li><i class="fas fa-file-alt text-muted me-2"></i>Text Files (.txt)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-info"><i class="fas fa-info-circle me-2"></i>Upload Tips</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-lightbulb text-warning me-2"></i>Use descriptive filenames</li>
+                                <li><i class="fas fa-tags text-primary me-2"></i>Add relevant tags for easy searching</li>
+                                <li><i class="fas fa-folder text-success me-2"></i>Choose appropriate categories</li>
+                                <li><i class="fas fa-shield-alt text-info me-2"></i>Files are automatically scanned for security</li>
+                                <li><i class="fas fa-history text-secondary me-2"></i>Version history is maintained</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ToastContainer />
+<style>
+    .drop-zone {
+        border: 2px dashed #dee2e6;
+        border-radius: 0.5rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+        border-color: #007bff;
+        background-color: #e3f2fd;
+    }
+
+    .drop-zone-content {
+        /* Removed pointer-events: none to allow interaction with buttons */
+    }
+
+    .selected-files {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+    }
+
+    .selected-file-item {
+        padding: 0.75rem;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 0.75rem;
+    }
+
+    .selected-file-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .file-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<script>
+    window.triggerFileInputFromDrop = (inputId) => {
+        // This function simulates a click on the file input when files are dropped
+        const fileInput = document.getElementById(inputId);
+        if (fileInput) {
+            fileInput.click();
+        }
+    };
+
+    window.setupDragAndDrop = (dropZoneId, inputId) => {
+        const dropZone = document.getElementById(dropZoneId);
+        const fileInput = document.getElementById(inputId);
+        
+        if (!dropZone || !fileInput) return;
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Handle drop
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                // Create a new FileList and assign it to the input
+                const dataTransfer = new DataTransfer();
+                for (let i = 0; i < files.length; i++) {
+                    dataTransfer.items.add(files[i]);
+                }
+                fileInput.files = dataTransfer.files;
+                
+                // Trigger the change event
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        }
+    };
+</script>

@@ -1,0 +1,145 @@
+@using blazor_arsip.Services
+@inject IToastService ToastService
+@implements IDisposable
+
+<div class="toast-container">
+    @foreach (var toast in _toasts)
+    {
+        <div class="toast toast-@toast.Type.ToString().ToLower() @(toast.IsVisible ? "show" : "hide")"
+             @key="toast.Id">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    @switch (toast.Type)
+                    {
+                        case ToastType.Success:
+                            <i class="fas fa-check-circle"></i>
+                            break;
+                        case ToastType.Error:
+                            <i class="fas fa-exclamation-circle"></i>
+                            break;
+                        case ToastType.Info:
+                            <i class="fas fa-info-circle"></i>
+                            break;
+                        case ToastType.Warning:
+                            <i class="fas fa-exclamation-triangle"></i>
+                            break;
+                    }
+                </div>
+                <strong class="toast-title">@toast.Title</strong>
+                <button type="button" class="toast-close" @onclick="() => RemoveToast(toast.Id)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="toast-body">
+                @toast.Message
+            </div>
+            <div class="toast-progress">
+                <div class="toast-progress-bar" style="animation-duration: @(toast.Duration)ms;"></div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ToastMessageWithVisibility> _toasts = new();
+    private Timer? _cleanupTimer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine("ToastContainer.OnAfterRenderAsync called - subscribing to events");
+            ToastService.OnToastAdded += HandleToastAdded;
+            ToastService.OnToastRemoved += HandleToastRemoved;
+            Console.WriteLine("ToastService events subscribed successfully");
+            
+            // Setup cleanup timer to run every second
+            _cleanupTimer = new Timer(CleanupExpiredToasts, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async void HandleToastAdded(ToastMessage toast)
+    {
+        Console.WriteLine($"ToastContainer.HandleToastAdded called: {toast.Title} - {toast.Message}");
+        var toastWithVisibility = new ToastMessageWithVisibility(toast);
+        _toasts.Add(toastWithVisibility);
+        Console.WriteLine($"Toast added to list. Total toasts: {_toasts.Count}");
+        
+        await InvokeAsync(StateHasChanged);
+        
+        // Show animation
+        await Task.Delay(50);
+        toastWithVisibility.IsVisible = true;
+        await InvokeAsync(StateHasChanged);
+        
+        // Auto remove after duration
+        _ = Task.Delay(toast.Duration).ContinueWith(async _ =>
+        {
+            await HideToast(toast.Id);
+        });
+    }
+
+    private async void HandleToastRemoved(string id)
+    {
+        await HideToast(id);
+    }
+
+    private async Task HideToast(string id)
+    {
+        var toast = _toasts.FirstOrDefault(t => t.Id == id);
+        if (toast != null)
+        {
+            toast.IsVisible = false;
+            await InvokeAsync(StateHasChanged);
+            
+            // Remove after animation
+            await Task.Delay(300);
+            _toasts.Remove(toast);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RemoveToast(string id)
+    {
+        await HideToast(id);
+    }
+
+    private void CleanupExpiredToasts(object? state)
+    {
+        var expiredToasts = _toasts.Where(t => 
+            DateTime.Now.Subtract(t.CreatedAt).TotalMilliseconds > t.Duration + 1000
+        ).ToList();
+
+        if (expiredToasts.Any())
+        {
+            foreach (var toast in expiredToasts)
+            {
+                _toasts.Remove(toast);
+            }
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        ToastService.OnToastAdded -= HandleToastAdded;
+        ToastService.OnToastRemoved -= HandleToastRemoved;
+        _cleanupTimer?.Dispose();
+    }
+
+    private class ToastMessageWithVisibility : ToastMessage
+    {
+        public bool IsVisible { get; set; } = false;
+
+        public ToastMessageWithVisibility(ToastMessage toast)
+        {
+            Id = toast.Id;
+            Title = toast.Title;
+            Message = toast.Message;
+            Type = toast.Type;
+            CreatedAt = toast.CreatedAt;
+            Duration = toast.Duration;
+        }
+    }
+}

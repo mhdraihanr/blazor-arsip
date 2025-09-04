@@ -1,0 +1,150 @@
+@page "/edit/{id:int}"
+@using blazor_arsip.Services
+@using blazor_arsip.Models
+@using blazor_arsip.Components.Pages.FileManagement.Edit
+@using System.ComponentModel.DataAnnotations
+
+@rendermode InteractiveServer
+@inherits EditFileBase
+
+<PageTitle>Edit File - Arsip Digital</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-gray-800">Edit File</h1>
+                <div>
+                    <a href="/list" class="btn btn-secondary me-2">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (viewModel.IsLoading)
+    {
+        <div class="row justify-content-center">
+            <div class="col-12 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading file details...</p>
+            </div>
+        </div>
+    }
+    else if (viewModel.FileRecord == null)
+    {
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    File not found.
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">File Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <EditForm Model="viewModel.EditModel" OnValidSubmit="viewModel.HandleValidSubmitAsync">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger" />
+
+                            <div class="mb-3">
+                                <label for="fileName" class="form-label">File Name</label>
+                                <InputText id="fileName" class="form-control" @bind-Value="viewModel.EditModel.FileName" />
+                                <ValidationMessage For="@(() => viewModel.EditModel.FileName)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <InputTextArea id="description" class="form-control" rows="3" @bind-Value="viewModel.EditModel.Description" />
+                                <ValidationMessage For="@(() => viewModel.EditModel.Description)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <InputText id="tags" class="form-control" @bind-Value="viewModel.EditModel.Tags" placeholder="Separate tags with commas" />
+                                <ValidationMessage For="@(() => viewModel.EditModel.Tags)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <InputSelect id="category" class="form-select" @bind-Value="viewModel.EditModel.Category">
+                                    <option value="">Select Category</option>
+                                    @foreach (var category in viewModel.Categories)
+                                    {
+                                        <option value="@category.Name">@category.Name</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => viewModel.EditModel.Category)" class="text-danger" />
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
+                            {
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i>@viewModel.ErrorMessage
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(viewModel.SuccessMessage))
+                            {
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>@viewModel.SuccessMessage
+                                </div>
+                            }
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary" disabled="@viewModel.IsSaving">
+                                    @if (viewModel.IsSaving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    }
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">File Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>Original Name:</strong><br>
+                            <span class="text-muted">@viewModel.FileRecord.FileName</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>File Size:</strong><br>
+                            <span class="text-muted">@EditFileViewModel.FormatFileSize(viewModel.FileRecord.FileSize)</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Uploaded:</strong><br>
+                            <span class="text-muted">@viewModel.FileRecord.UploadedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                        </div>
+                        @if (viewModel.FileRecord.ModifiedAt.HasValue)
+                        {
+                            <div class="mb-3">
+                                <strong>Last Modified:</strong><br>
+                                <span class="text-muted">@viewModel.FileRecord.ModifiedAt.Value.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<ToastContainer />

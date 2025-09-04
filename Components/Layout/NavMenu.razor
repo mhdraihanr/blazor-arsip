@@ -1,6 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">blazor-arsip</a>
+        <a class="navbar-brand" href="">
+            <i class="fas fa-archive me-2"></i> PT. LEN INDUSTRI
+        </a>
     </div>
 </div>
 
@@ -9,20 +11,34 @@
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href="dashboard" Match="NavLinkMatch.All">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="list">
+                <i class="fas fa-list me-2"></i> File List
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            <NavLink class="nav-link" href="upload">
+                <i class="fas fa-upload me-2"></i> Upload Files
+            </NavLink>
+        </div>
+
+
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="">
+                <i class="fas fa-chart-bar me-2"></i> Reports
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="">
+                <i class="fas fa-cog me-2"></i> Settings
             </NavLink>
         </div>
     </nav>

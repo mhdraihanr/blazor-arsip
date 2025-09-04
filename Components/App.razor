@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["blazor-arsip.styles.css"]" />
     <ImportMap />
@@ -16,6 +17,100 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script>
+        window.downloadFile = function (url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Trigger a custom event to notify components about download
+            window.dispatchEvent(new CustomEvent('fileDownloaded', {
+                detail: { url: url, filename: filename }
+            }));
+        };
+        
+        // Function to set dashboard instance
+        window.setDashboardInstance = function(instance) {
+            window.dashboardInstance = instance;
+        };
+        
+        // Function to refresh dashboard stats
+        window.refreshDashboardStats = function() {
+            if (window.DotNet && window.dashboardInstance) {
+                window.dashboardInstance.invokeMethodAsync('RefreshStats');
+            }
+        };
+
+        // Initialize theme immediately when script loads
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+
+        // Dark Mode Toggle Functionality
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            updateDarkModeIcon(newTheme);
+        }
+
+        // Update dark mode icon
+        function updateDarkModeIcon(theme) {
+            const icon = document.getElementById('darkModeIcon');
+            if (icon) {
+                if (theme === 'dark') {
+                    icon.className = 'fas fa-sun dark-mode-icon';
+                } else {
+                    icon.className = 'fas fa-moon dark-mode-icon';
+                }
+            }
+        }
+
+        // Initialize theme and icon on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const html = document.documentElement;
+            
+            html.setAttribute('data-theme', savedTheme);
+            updateDarkModeIcon(savedTheme);
+        });
+
+        // Ensure theme consistency on Blazor navigation
+        window.addEventListener('beforeunload', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme) {
+                localStorage.setItem('theme', currentTheme);
+            }
+        });
+
+        // Re-apply theme after Blazor navigation
+        if (window.Blazor) {
+            window.Blazor.addEventListener('enhancedload', function() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                updateDarkModeIcon(savedTheme);
+            });
+        }
+
+        // Fallback: Check and apply theme periodically
+        setInterval(function() {
+            const savedTheme = localStorage.getItem('theme');
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            
+            if (savedTheme && savedTheme !== currentTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                updateDarkModeIcon(savedTheme);
+            }
+        }, 1000);
+    </script>
 </body>
 
 </html>
