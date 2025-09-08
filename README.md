@@ -14,32 +14,45 @@
 ## 📁 Struktur Direktori
 
 ```
-blazor-arsip/
+blazer-arsip/
 ├── Components/           # Komponen Blazor
-│   ├── Layout/          # Layout utama (MainLayout, NavMenu)
+│   ├── Layout/          # Layout (MainLayout, NavMenu, LoginLayout)
 │   ├── Pages/           # Halaman aplikasi
 │   │   ├── Dashboard/   # Dashboard utama
-│   │   └── FileManagement/ # Manajemen file
-│   └── Shared/          # Komponen shared (Toast, UserMenu)
-├── Controllers/         # API Controllers
-│   └── FileController.cs
+│   │   ├── FileManagement/ # Manajemen file
+│   │   ├── Login.razor  # Halaman login
+│   │   ├── Register.razor # Halaman registrasi
+│   │   └── Logout.razor # Halaman logout
+│   └── Shared/          # Komponen shared
+│       ├── UserMenu.razor # Menu user dengan auth
+│       ├── AuthDebug.razor # Debug authentication
+│       ├── RedirectToLogin.razor # Redirect handler
+│       └── ToastContainer.razor # Toast notifications
+├── Controllers/         # API & Auth Controllers
+│   ├── AccountController.cs # Login/Logout controller
+│   ├── AuthController.cs # Authentication API
+│   └── FileController.cs # File management API
 ├── Data/                # Entity Framework
-│   └── ApplicationDbContext.cs
+│   └── ApplicationDbContext.cs # DB Context dengan User
 ├── Migrations/          # Database migrations
 ├── Models/             # Data models
-│   ├── FileRecord.cs
-│   ├── UploadModel.cs
-│   └── UserInfo.cs
+│   ├── User.cs         # User authentication model
+│   ├── UserInfo.cs     # User display model
+│   ├── LoginRequest.cs # Login form model
+│   ├── RegisterRequest.cs # Registration form model
+│   ├── FileRecord.cs   # File storage model
+│   └── UploadModel.cs  # File upload model
 ├── Services/           # Business logic services
-│   ├── CurrentUserService.cs
-│   ├── FileService.cs
-│   ├── FileUploadService.cs
-│   └── ToastService.cs
-├── Program.cs          # Startup configuration
+│   ├── AuthenticationService.cs # Auth & password hashing
+│   ├── CurrentUserService.cs # Current user context
+│   ├── FileService.cs  # File operations
+│   ├── FileUploadService.cs # File upload logic
+│   └── ToastService.cs # UI notifications
+├── Program.cs          # Startup dengan auth configuration
 ├── Properties/         # Project properties
 ├── wwwroot/           # Static files
 │   ├── lib/bootstrap/ # Bootstrap framework
-│   └── uploads/       # File storage
+│   └── uploads/       # File storage directory
 └── blazor-arsip.csproj # Project configuration
 ```
 
@@ -89,6 +102,18 @@ blazor-arsip/
 
 Aplikasi akan berjalan di `http://localhost:5264`
 
+### 🔑 First Login
+
+Setelah aplikasi berjalan:
+
+1. **Akses aplikasi** di `http://localhost:5264`
+2. **Akan diredirect ke login**: `http://localhost:5264/login`
+3. **Login dengan test account**:
+   - Email: `raihan@company.com`
+   - Password: `admin123`
+4. **Atau buat account baru** melalui link "Create Account"
+5. **Setelah login berhasil** akan diredirect ke dashboard
+
 ## 🚀 Contoh Penggunaan
 
 ### Menjalankan Build dan Development
@@ -105,11 +130,20 @@ dotnet watch run
 dotnet publish -c Release
 ```
 
-### Mengakses File Upload
+### 📝 Menggunakan Aplikasi
 
-- Upload file melalui `/upload`
-- Kelola file di `/files`
-- Dashboard overview di `/dashboard`
+**Setelah login berhasil, Anda dapat mengakses:**
+
+- **Dashboard** (`/dashboard`) - Overview file dan statistik
+- **Upload Files** (`/upload`) - Upload file baru
+- **Browse Files** (`/list`) - Kelola file existing  
+- **Search Files** (`/search`) - Pencarian file
+- **Categories** (`/categories`) - Manajemen kategori
+
+**User Management:**
+- **User Menu** (klik nama user) - Profile dan logout
+- **Registration** (`/register`) - Daftar user baru
+- **Logout** - Keluar dengan aman dari aplikasi
 
 ### API Endpoints
 
@@ -231,88 +265,190 @@ dotnet watch run --shutdown
 - Pastikan Bootstrap JS loaded di App.razor
 - Verify wwwroot/lib/bootstrap/ exists
 
+**Authentication Issues**
+
+- **Login Loop**: Clear browser cookies dan restart aplikasi
+- **403 Unauthorized**: Pastikan user login dengan akun valid
+- **Redirect Issues**: Check browser developer tools untuk error di console
+- **Session Expired**: Login ulang jika session sudah expire
+
+**Database User Issues**
+
+- **No Test User**: Jalankan migration untuk create seed data
+- **Password Reset**: Check database tabel `Users` untuk verify hash
+- **Email Duplicate**: Gunakan email yang belum terdaftar untuk registrasi
+
 ## 🔐 Sistem Autentikasi
 
-### Struktur Autentikasi
+### Overview
 
-Sistem menggunakan autentikasi email dan password dengan integrasi Blazor Server authentication:
+Sistem autentikasi lengkap berbasis **ASP.NET Core Cookie Authentication** dengan dukungan penuh untuk:
+- Login/Logout dengan email dan password
+- User registration
+- Session management
+- Authorization pada halaman protected
+- Redirect otomatis untuk user yang belum login
 
-**Model User** (`Models/UserInfo.cs`):
+### 🚀 Fitur Authentication
 
+#### ✅ Login System
+- **Email & Password Authentication**
+- **Cookie-based session** dengan expiry 30 hari
+- **Automatic redirect** ke dashboard setelah login
+- **Error handling** untuk invalid credentials
+- **Return URL support** untuk redirect ke halaman yang diminta
+
+#### ✅ User Registration
+- **Self-registration** dengan validasi email unik
+- **Password hashing** menggunakan BCrypt
+- **Form validation** dengan data annotations
+- **Auto-redirect** ke login setelah registrasi berhasil
+
+#### ✅ Logout System
+- **Complete session cleanup**
+- **Cookie removal** dan redirect ke login
+- **User menu integration** dengan form POST
+
+#### ✅ Authorization
+- **Page-level protection** dengan `[Authorize]` attribute
+- **Automatic redirects** untuk unauthenticated users
+- **Route-based authorization** dengan `AuthorizeRouteView`
+
+### 🏗️ Arsitektur Authentication
+
+#### Database Schema
+
+**User Model** (`Models/User.cs`):
 ```csharp
-public class UserInfo
+public class User
 {
+    public int Id { get; set; }
     public string Email { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
     public string? PhotoUrl { get; set; }
+    public bool IsActive { get; set; } = true;
+    public DateTime CreatedAt { get; set; }
+    public DateTime? LastLoginAt { get; set; }
 }
 ```
 
-**Current User Service** (`Services/CurrentUserService.cs`):
+#### Controllers
 
+**AccountController** (`Controllers/AccountController.cs`):
+- `POST /Account/Login` - Handles browser login form
+- `POST /Account/Logout` - Clears authentication and redirects
+- Cookie management dengan proper security settings
+
+#### Services
+
+**AuthenticationService** (`Services/AuthenticationService.cs`):
+```csharp
+public interface IAuthenticationService
+{
+    Task<User?> AuthenticateAsync(string email, string password);
+    string HashPassword(string password);
+    bool VerifyPassword(string password, string hash);
+}
+```
+
+**CurrentUserService** (`Services/CurrentUserService.cs`):
 ```csharp
 public interface ICurrentUserService
 {
-    Task<UserInfo?> GetCurrentUserAsync(CancellationToken cancellationToken = default);
-}
-
-public class CurrentUserService : ICurrentUserService
-{
-    public Task<UserInfo?> GetCurrentUserAsync(CancellationToken cancellationToken = default)
-    {
-        // Implementasi autentikasi email dan password
-        var user = new UserInfo
-        {
-            Email = "user@company.com",
-            Name = "Authenticated User",
-            PhotoUrl = null
-        };
-        return Task.FromResult<UserInfo?>(user);
-    }
+    Task<UserInfo?> GetCurrentUserAsync();
 }
 ```
 
-### Fitur Login
+### 🔧 Konfigurasi
 
-- **Email & Password Authentication**: Login menggunakan kombinasi email dan password
-- **Session Management**: Management session user yang aman
-- **User Context**: Akses informasi user melalui dependency injection
-- **Form Handling**: Menggunakan `FormName` parameter pada `<EditForm>` untuk mengatasi masalah POST request
-
-#### Perbaikan Form POST Issue
-
-Untuk mengatasi error "The POST request does not specify which form is being submitted", pastikan:
-
-1. **Tambahkan FormName pada EditForm**:
-   ```razor
-   <EditForm Model="FormModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
-   ```
-
-2. **Verifikasi form submission**: FormName parameter memastikan Blazor dapat mengidentifikasi form yang di-submit
-
-3. **Data validation**: Form menggunakan DataAnnotationsValidator untuk validasi client-side
-
-### Konfigurasi Program.cs
-
+**Program.cs Configuration**:
 ```csharp
-// Registrasi services autentikasi
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+// Authentication & Authorization
+builder.Services.AddAuthentication("CustomAuth")
+    .AddCookie("CustomAuth", options =>
+    {
+        options.Cookie.Name = "BlazorArsipAuth";
+        options.Cookie.HttpOnly = true;
+        options.LoginPath = "/login";
+        options.LogoutPath = "/logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
+    });
 
-// Catatan: Sistem saat ini menggunakan mock user untuk demo.
-// Untuk implementasi autentikasi lengkap, tambahkan:
-// services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//     .AddCookie(options =>
-//     {
-//         options.LoginPath = "/login";
-//         options.AccessDeniedPath = "/access-denied";
-//     });
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+
+// Authentication Services
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 ```
 
-### Status Autentikasi Saat Ini
+### 🛡️ Protected Pages
 
-- **Mode Demo**: Menggunakan mock user data untuk testing
-- **CurrentUserService**: Menyediakan informasi user saat ini
-- **Planned Features**: Login email/password akan diimplementasikan pada fase berikutnya
+Semua halaman penting dilindungi dengan `[Authorize]`:
+- `/dashboard` - Dashboard utama
+- `/upload` - File upload
+- `/list` - File management
+- `/categories` - Category management
+- `/search` - File search
+
+**Contoh implementasi**:
+```razor
+@page "/dashboard"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<!-- Dashboard content -->
+```
+
+### 🔑 Test User Account
+
+Untuk testing, tersedia user account:
+- **Email**: `raihan@company.com`
+- **Password**: `password123`
+- **Name**: Muhammad Raihan
+
+### 📱 UI Components
+
+#### Login Page (`/login`)
+- Form dengan HTML standard (bukan EditForm)
+- Browser-native form POST ke `/Account/Login`
+- Error handling dari query parameters
+- Link ke registration page
+
+#### User Menu Component
+- Menampilkan nama user dan email
+- Avatar support (initials atau photo)
+- Dropdown dengan profile options
+- Logout button dengan form POST
+
+#### Registration Page (`/register`)
+- Email uniqueness validation
+- Password confirmation
+- Form validation dengan DataAnnotations
+- Success/error messaging
+
+### 🚦 Authorization Flow
+
+1. **Unauthenticated user** mengakses protected page
+2. **AuthorizeRouteView** mendeteksi unauthorized access
+3. **RedirectToLogin** component mengalihkan ke `/login?returnUrl=...`
+4. Setelah **login berhasil**, user diredirect ke halaman asli
+5. **Cookie authentication** menjaga session aktif
+
+### 🔍 Debugging Authentication
+
+Gunakan **AuthDebug** component untuk monitoring:
+```razor
+<AuthDebug />
+```
+
+Menampilkan:
+- Authentication status
+- User name dan email
+- Claims information
+- Real-time updates saat auth state berubah
 
 ## 📞 Support
 
@@ -326,7 +462,9 @@ Untuk bantuan teknis atau issues:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: 2024  
+**Version**: 2.0.0 (with Authentication)  
+**Last Updated**: January 2025  
 **Framework**: .NET 9.0 Blazor Server  
 **Database**: MySQL/MariaDB
+**Authentication**: ASP.NET Core Cookie Authentication
+**Branch**: `with-auth` (main feature branch)
