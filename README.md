@@ -468,3 +468,5 @@ Untuk bantuan teknis atau issues:
 **Database**: MySQL/MariaDB
 **Authentication**: ASP.NET Core Cookie Authentication
 **Branch**: `with-auth` (main feature branch)
+
+<!-- Test commit with new git account: mhdraihanr <raihanrafliansyah1234@gmail.com> -->
