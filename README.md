@@ -406,7 +406,7 @@ Semua halaman penting dilindungi dengan `[Authorize]`:
 
 Untuk testing, tersedia user account:
 - **Email**: `raihan@company.com`
-- **Password**: `password123`
+- **Password**: `admin123`
 - **Name**: Muhammad Raihan
 
 ### 📱 UI Components
