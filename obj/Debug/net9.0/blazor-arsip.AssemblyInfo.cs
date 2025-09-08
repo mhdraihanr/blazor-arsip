@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("blazor-arsip")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e5c9afd75c3a78ddd79e6aba5ab2a0a84f5b34bc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e74e2268b04b7f28245133ea7ce076f79e43206")]
 [assembly: System.Reflection.AssemblyProductAttribute("blazor-arsip")]
 [assembly: System.Reflection.AssemblyTitleAttribute("blazor-arsip")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

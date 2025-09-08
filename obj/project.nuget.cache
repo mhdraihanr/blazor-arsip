@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "nMPf6HRjhn8=",
+  "dgSpecHash": "wQs9ZcHpmMU=",
   "success": true,
   "projectFilePath": "D:\\a-csharp\\blazor-arsip\\blazor-arsip.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ASUS TUF\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\ASUS TUF\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
+    "C:\\Users\\ASUS TUF\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\ASUS TUF\\.nuget\\packages\\fluentvalidation\\11.11.0\\fluentvalidation.11.11.0.nupkg.sha512",
     "C:\\Users\\ASUS TUF\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.0\\fluentvalidation.aspnetcore.11.3.0.nupkg.sha512",
     "C:\\Users\\ASUS TUF\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.5.1\\fluentvalidation.dependencyinjectionextensions.11.5.1.nupkg.sha512",
