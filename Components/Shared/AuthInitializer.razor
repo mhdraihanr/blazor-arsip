@@ -1,0 +1,26 @@
+@rendermode InteractiveServer
+@using blazor_arsip.Services
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inject ILogger<AuthInitializer> Logger
+
+@code {
+    private bool _hasInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_hasInitialized)
+        {
+            _hasInitialized = true;
+            Logger.LogInformation("Initializing authentication state...");
+            try
+            {
+                await AuthStateProvider.InitializeAsync();
+                Logger.LogInformation("Authentication state initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error initializing authentication state");
+            }
+        }
+    }
+}

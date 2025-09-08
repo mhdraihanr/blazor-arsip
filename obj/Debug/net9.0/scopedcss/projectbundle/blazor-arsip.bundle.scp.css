@@ -1651,3 +1651,22 @@ th div[b-37d5y5dnrg] {
         font-size: 12px;
     }
 }
+/* _content/blazor-arsip/Components/Shared/UserMenu.razor.rz.scp.css */
+.user-menu[b-1pcg0i3hlc] { position: relative; }
+.user-button[b-1pcg0i3hlc] { border: 1px solid #e3e6f0; border-radius: 999px; padding: 6px 10px; background-color: #fff; }
+.user-button:hover[b-1pcg0i3hlc] { background-color: #f8f9fa; }
+
+.avatar[b-1pcg0i3hlc] { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #e9ecef; display: flex; align-items: center; justify-content: center; }
+.avatar-img[b-1pcg0i3hlc] { width: 100%; height: 100%; object-fit: cover; }
+.avatar-initials[b-1pcg0i3hlc] { font-weight: 600; color: #495057; }
+
+.user-name[b-1pcg0i3hlc] { font-weight: 600; line-height: 1; }
+.user-email[b-1pcg0i3hlc] { line-height: 1; }
+
+.dropdown-menu[b-1pcg0i3hlc] { min-width: 220px; }
+.dropdown-item[b-1pcg0i3hlc] { font-size: 0.95rem; }
+
+/* Dark mode */
+:root[data-theme='dark'] .user-button[b-1pcg0i3hlc] { background-color: #2b2b2b; border-color: #3a3a3a; }
+:root[data-theme='dark'] .user-button:hover[b-1pcg0i3hlc] { background-color: #363636; }
+:root[data-theme='dark'] .avatar[b-1pcg0i3hlc] { background: #3a3a3a; }

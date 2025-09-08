@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<FileVersion> FileVersions { get; set; }
     public DbSet<FileActivity> FileActivities { get; set; }
     public DbSet<FileCategory> FileCategories { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,21 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.Name).IsUnique();
         });
 
+        // Configure User
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.PhotoUrl).HasMaxLength(500);
+            entity.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.LastLoginAt);
+            
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
+
         // Seed data
         SeedData(modelBuilder);
     }
@@ -106,5 +122,36 @@ public class ApplicationDbContext : DbContext
             new FileCategory { Id = 7, Name = "Presentations", Description = "PowerPoint and presentation files", ColorCode = "#fd7e14", CreatedBy = "System" },
             new FileCategory { Id = 8, Name = "Other", Description = "Other file types", ColorCode = "#6c757d", CreatedBy = "System" }
         );
+
+        // Seed default users (password: "admin123" hashed with BCrypt)
+        modelBuilder.Entity<User>().HasData(
+            new User 
+            { 
+                Id = 1, 
+                Email = "admin@company.com", 
+                Name = "Administrator", 
+                PasswordHash = "$2a$11$8K1p/a0dRTlNqo/x3/Yd4.WdRuBdHdXRf5mGvFlvzeH4p5rEeIXJG", // admin123
+                IsActive = true,
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new User 
+            { 
+                Id = 2, 
+                Email = "user@company.com", 
+                Name = "Regular User", 
+                PasswordHash = "$2a$11$8K1p/a0dRTlNqo/x3/Yd4.WdRuBdHdXRf5mGvFlvzeH4p5rEeIXJG", // admin123
+                IsActive = true,
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new User 
+            { 
+                Id = 3, 
+                Email = "test@company.com", 
+                Name = "Test User", 
+                PasswordHash = "$2a$11$8K1p/a0dRTlNqo/x3/Yd4.WdRuBdHdXRf5mGvFlvzeH4p5rEeIXJG", // admin123
+                IsActive = true,
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+             }
+         );
     }
 }

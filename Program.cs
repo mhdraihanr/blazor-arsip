@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,54 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 builder.Services.AddScoped<IToastService, ToastService>();
+
+// Tambah CurrentUserService untuk menyediakan data user saat ini
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// Add HttpContextAccessor for authentication
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+
+// Add session support
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Name = "BlazorArsipSession";
+});
+
+// Authentication & Authorization (Blazor Server)
+builder.Services.AddAuthentication("CustomAuth")
+    .AddCookie("CustomAuth", options =>
+    {
+        options.Cookie.Name = "BlazorArsipAuth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.LoginPath = "/login";
+        options.LogoutPath = "/logout";
+        options.AccessDeniedPath = "/login";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
+        // Disable automatic redirects for API calls
+        options.Events.OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            }
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
+    });
+
+builder.Services.AddAuthorizationCore();
+// Use standard server-side authentication
+builder.Services.AddCascadingAuthenticationState();
 
 // Add controllers
 builder.Services.AddControllers();
@@ -66,50 +116,33 @@ builder.Services.AddAntiforgery(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-// Use CORS
-app.UseCors("AllowLocalhost");
+app.UseStaticFiles();
 
-// Add security headers
-app.Use(async (context, next) =>
-{
-    // Allow file preview endpoints to have more relaxed headers
-    if (!context.Request.Path.StartsWithSegments("/api/file/preview"))
-    {
-        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-        context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN"; // Changed from DENY to SAMEORIGIN
-        context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
-        context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    }
-    else
-    {
-        // More permissive headers for file preview
-        context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
-        context.Response.Headers["Referrer-Policy"] = "same-origin";
-    }
-    await next();
-});
+app.UseRouting();
 
+app.UseSession();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Antiforgery middleware harus berada setelah UseRouting dan sebelum pemetaan endpoint
 app.UseAntiforgery();
 
-app.MapStaticAssets();
 app.MapControllers();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-// Ensure uploads directory exists
-var uploadsPath = Path.Combine(app.Environment.WebRootPath, "uploads");
-if (!Directory.Exists(uploadsPath))
-{
-    Directory.CreateDirectory(uploadsPath);
-}
 
 app.Run();

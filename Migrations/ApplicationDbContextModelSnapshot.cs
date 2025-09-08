@@ -120,7 +120,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 1,
                             ColorCode = "#007bff",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(5015),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(2092),
                             CreatedBy = "System",
                             Description = "General documents and text files",
                             IsActive = true,
@@ -130,7 +130,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 2,
                             ColorCode = "#28a745",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(6037),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(3364),
                             CreatedBy = "System",
                             Description = "Image files and graphics",
                             IsActive = true,
@@ -140,7 +140,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 3,
                             ColorCode = "#dc3545",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(6039),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(3366),
                             CreatedBy = "System",
                             Description = "Video files and multimedia",
                             IsActive = true,
@@ -150,7 +150,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 4,
                             ColorCode = "#ffc107",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(6040),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(3367),
                             CreatedBy = "System",
                             Description = "Audio files and music",
                             IsActive = true,
@@ -160,7 +160,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 5,
                             ColorCode = "#6f42c1",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(6041),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(3368),
                             CreatedBy = "System",
                             Description = "Compressed files and archives",
                             IsActive = true,
@@ -170,7 +170,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 6,
                             ColorCode = "#20c997",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(6042),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(3369),
                             CreatedBy = "System",
                             Description = "Excel and spreadsheet files",
                             IsActive = true,
@@ -180,7 +180,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 7,
                             ColorCode = "#fd7e14",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(6042),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(3370),
                             CreatedBy = "System",
                             Description = "PowerPoint and presentation files",
                             IsActive = true,
@@ -190,7 +190,7 @@ namespace blazor_arsip.Migrations
                         {
                             Id = 8,
                             ColorCode = "#6c757d",
-                            CreatedAt = new DateTime(2025, 9, 4, 3, 33, 10, 477, DateTimeKind.Utc).AddTicks(6043),
+                            CreatedAt = new DateTime(2025, 9, 7, 9, 29, 56, 534, DateTimeKind.Utc).AddTicks(3371),
                             CreatedBy = "System",
                             Description = "Other file types",
                             IsActive = true,
@@ -348,6 +348,83 @@ namespace blazor_arsip.Migrations
                     b.HasIndex("VersionNumber");
 
                     b.ToTable("FileVersions");
+                });
+
+            modelBuilder.Entity("blazor_arsip.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@company.com",
+                            IsActive = true,
+                            Name = "Administrator",
+                            PasswordHash = "$2a$11$8K1p/a0dRTlNqo/x3/Yd4.WdRuBdHdXRf5mGvFlvzeH4p5rEeIXJG"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "user@company.com",
+                            IsActive = true,
+                            Name = "Regular User",
+                            PasswordHash = "$2a$11$8K1p/a0dRTlNqo/x3/Yd4.WdRuBdHdXRf5mGvFlvzeH4p5rEeIXJG"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "test@company.com",
+                            IsActive = true,
+                            Name = "Test User",
+                            PasswordHash = "$2a$11$8K1p/a0dRTlNqo/x3/Yd4.WdRuBdHdXRf5mGvFlvzeH4p5rEeIXJG"
+                        });
                 });
 
             modelBuilder.Entity("blazor_arsip.Models.FileActivity", b =>

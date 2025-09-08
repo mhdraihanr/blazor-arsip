@@ -1,0 +1,67 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILogger<AuthDebug> Logger
+
+<div class="alert alert-info">
+    <h6>Authentication Debug Info:</h6>
+    <p><strong>Is Authenticated:</strong> @isAuthenticated</p>
+    <p><strong>User Name:</strong> @userName</p>
+    <p><strong>User Email:</strong> @userEmail</p>
+    <p><strong>Claims Count:</strong> @claimsCount</p>
+    @if (claims.Any())
+    {
+        <ul>
+            @foreach (var claim in claims.Take(5))
+            {
+                <li>@claim.Type: @claim.Value</li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private bool isAuthenticated = false;
+    private string userName = "N/A";
+    private string userEmail = "N/A";
+    private int claimsCount = 0;
+    private List<System.Security.Claims.Claim> claims = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await UpdateStateAsync();
+            AuthenticationStateProvider.AuthenticationStateChanged += OnAuthStateChanged;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing AuthDebug");
+        }
+    }
+
+    private async void OnAuthStateChanged(Task<AuthenticationState> task)
+    {
+        await UpdateStateAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateStateAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        userName = user.Identity?.Name ?? "N/A";
+        userEmail = user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "N/A";
+        claims = user.Claims.ToList();
+        claimsCount = claims.Count;
+
+        Logger.LogInformation("Auth Debug - IsAuthenticated: {IsAuth}, Name: {Name}, Email: {Email}", 
+            isAuthenticated, userName, userEmail);
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthStateChanged;
+    }
+}

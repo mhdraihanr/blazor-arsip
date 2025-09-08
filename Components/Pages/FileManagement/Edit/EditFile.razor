@@ -3,6 +3,8 @@
 @using blazor_arsip.Models
 @using blazor_arsip.Components.Pages.FileManagement.Edit
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 @rendermode InteractiveServer
 @inherits EditFileBase

@@ -1,0 +1,141 @@
+@using blazor_arsip.Models
+@using blazor_arsip.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
+@inject ICurrentUserService CurrentUserService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject ILogger<UserMenu> Logger
+
+<div class="user-menu dropdown" @onmouseleave="() => IsOpen = false">
+    <button class="btn btn-light d-flex align-items-center user-button" 
+            @onclick="ToggleDropdown" 
+            aria-haspopup="true" 
+            aria-expanded="@IsOpen.ToString().ToLower()"
+            data-bs-toggle="dropdown">
+        <div class="avatar me-2">
+            @if (!string.IsNullOrWhiteSpace(User?.PhotoUrl))
+            {
+                <img src="@User!.PhotoUrl" alt="@User!.Name" class="avatar-img" />
+            }
+            else
+            {
+                <div class="avatar-initials">@GetInitials(User?.Name)</div>
+            }
+        </div>
+        <div class="d-none d-sm-flex flex-column text-start">
+            <span class="user-name">@User?.Name</span>
+            <small class="text-muted user-email">@User?.Email</small>
+        </div>
+        <i class="fas fa-chevron-down ms-2 text-muted"></i>
+    </button>
+
+    <ul class="dropdown-menu dropdown-menu-end @((IsOpen ? "show" : ""))" 
+        aria-labelledby="dropdownMenuButton">
+        <li><a class="dropdown-item" href="#" @onclick="Profile"><i class="fas fa-user me-2"></i>Profil Pengguna</a></li>
+        <li><a class="dropdown-item" href="#" @onclick="AccountSettings"><i class="fas fa-cog me-2"></i>Pengaturan Akun</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+            <form method="post" action="/Account/Logout">
+                <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private UserInfo? User;
+    private bool IsOpen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Subscribe to authentication state changes
+            AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+            
+            // Load initial user data
+            await LoadUserAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing UserMenu");
+        }
+    }
+
+    private async Task LoadUserAsync()
+    {
+        try
+        {
+            User = await CurrentUserService.GetCurrentUserAsync();
+            Logger.LogDebug("User loaded: {UserName}, Email: {UserEmail}", User?.Name, User?.Email);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading user data");
+            User = null;
+        }
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        try
+        {
+            var authState = await task;
+            if (authState.User.Identity?.IsAuthenticated == true)
+            {
+                await LoadUserAsync();
+            }
+            else
+            {
+                User = null;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling authentication state change");
+        }
+    }
+
+    private void ToggleDropdown()
+    {
+        IsOpen = !IsOpen;
+        StateHasChanged(); // Force UI update
+    }
+
+    private string GetInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "U";
+        var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0][0].ToString().ToUpperInvariant();
+        return (parts[0][0].ToString() + parts[^1][0].ToString()).ToUpperInvariant();
+    }
+
+    private Task Profile()
+    {
+        IsOpen = false;
+        // TODO: Navigate to profile page when available
+        return Task.CompletedTask;
+    }
+
+    private Task AccountSettings()
+    {
+        IsOpen = false;
+        // TODO: Navigate to account settings when available
+        return Task.CompletedTask;
+    }
+
+
+    public void Dispose()
+    {
+        // Unsubscribe from authentication state changes
+        if (AuthStateProvider != null)
+        {
+            AuthStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+        }
+    }
+}

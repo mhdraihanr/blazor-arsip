@@ -3,6 +3,8 @@
 @using blazor_arsip.Services
 @using blazor_arsip.Models
 @using blazor_arsip.Components.Pages.Dashboard
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @inherits DashboardBase
 
 @rendermode InteractiveServer
@@ -296,3 +298,4 @@
 </div>
 
 <ToastContainer />
+
