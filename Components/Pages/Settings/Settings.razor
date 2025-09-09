@@ -1,0 +1,337 @@
+@page "/settings"
+@using blazor_arsip.Components.Pages.Settings
+@using blazor_arsip.Components.Shared
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inherits SettingsBase
+
+<PageTitle>Settings - Arsip Digital</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h4 text-gray-800 mb-0">
+                    <i class="fas fa-cog me-2"></i>Settings
+                </h1>
+                @if (activeTab != "profile")
+                {
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary btn-sm" @onclick="ResetToDefaults" disabled="@(isLoading || isSaving)">
+                            <i class="fas fa-undo me-2"></i>Reset to Defaults
+                        </button>
+                        <button class="btn btn-primary btn-sm" @onclick="SaveSettings" disabled="@(isLoading || isSaving)">
+                            @if (isSaving)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            else
+                            {
+                                <i class="fas fa-save me-2"></i>
+                            }
+                            Save Settings
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center py-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <!-- Navigation Tabs -->
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body p-3">
+                        <div class="nav nav-pills flex-column settings-nav" role="tablist">
+                            <button class="nav-link @(activeTab == "profile" ? "active" : "")" @onclick='() => SetActiveTab("profile")'>
+                                <i class="fas fa-user me-2"></i>Profile
+                            </button>
+                            <button class="nav-link @(activeTab == "preferences" ? "active" : "")" @onclick='() => SetActiveTab("preferences")'>
+                                <i class="fas fa-sliders-h me-2"></i>Preferences
+                            </button>
+                            <button class="nav-link disabled" disabled title="Security settings coming soon">
+                                <i class="fas fa-shield-alt me-2"></i>Security
+                            </button>
+                            <button class="nav-link @(activeTab == "files" ? "active" : "")" @onclick='() => SetActiveTab("files")'>
+                                <i class="fas fa-folder me-2"></i>File Settings
+                            </button>
+                            <button class="nav-link @(activeTab == "system" ? "active" : "")" @onclick='() => SetActiveTab("system")'>
+                                <i class="fas fa-info-circle me-2"></i>System Info
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-md-8">
+                @if (activeTab == "profile")
+                {
+                    <!-- Profile Tab -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-user me-2"></i>User Profile
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4 text-center mb-4">
+                                    <div class="profile-picture-container">
+                                        @if (!string.IsNullOrWhiteSpace(viewModel.ProfilePicture))
+                                        {
+                                            <img src="@viewModel.ProfilePicture" alt="Profile Picture" class="profile-picture">
+                                        }
+                                        else
+                                        {
+                                            <div class="profile-picture profile-picture-placeholder">
+                                                <i class="fas fa-user fa-3x"></i>
+                                            </div>
+                                        }
+                                    </div>
+                                    <h5 class="mt-3">@viewModel.FullName</h5>
+                                    <p class="text-muted">@viewModel.UserRole</p>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <h6 class="text-muted mb-3">Account Information</h6>
+                                            <div class="profile-info-item">
+                                                <span class="profile-label">Full Name:</span>
+                                                <span class="profile-value">@viewModel.FullName</span>
+                                            </div>
+                                            <div class="profile-info-item">
+                                                <span class="profile-label">Email Address:</span>
+                                                <span class="profile-value">@viewModel.Email</span>
+                                            </div>
+                                            <div class="profile-info-item">
+                                                <span class="profile-label">Account Created:</span>
+                                                <span class="profile-value">@viewModel.AccountCreated.ToString("MMM dd, yyyy")</span>
+                                            </div>
+                                            <div class="profile-info-item">
+                                                <span class="profile-label">Last Login:</span>
+                                                <span class="profile-value">@viewModel.LastLogin.ToString("MMM dd, yyyy HH:mm")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (activeTab == "preferences")
+                {
+                    <!-- Preferences Tab -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-sliders-h me-2"></i>Application Preferences
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">Interface Settings</h6>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" @bind="viewModel.DarkMode" id="darkMode">
+                                        <label class="form-check-label" for="darkMode">Dark Mode</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Language</label>
+                                        <select class="form-select" @bind="viewModel.Language">
+                                            <option value="en">English</option>
+                                            <option value="id">Indonesian</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Items per Page</label>
+                                        <input type="number" class="form-control" @bind="viewModel.ItemsPerPage" min="10" max="100" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">Notifications</h6>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" @bind="viewModel.EmailNotifications" id="emailNotif">
+                                        <label class="form-check-label" for="emailNotif">Email Notifications</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" @bind="viewModel.BrowserNotifications" id="browserNotif">
+                                        <label class="form-check-label" for="browserNotif">Browser Notifications</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" @bind="viewModel.AutoSave" id="autoSave">
+                                        <label class="form-check-label" for="autoSave">Auto-save</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (activeTab == "security")
+                {
+                    <!-- Security Tab -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-shield-alt me-2"></i>Security Settings
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">Authentication</h6>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" @bind="viewModel.TwoFactorEnabled" id="twoFactor">
+                                        <label class="form-check-label" for="twoFactor">Two-Factor Authentication</label>
+                                    </div>
+                                    @if (viewModel.TwoFactorEnabled)
+                                    {
+                                        <button type="button" class="btn btn-outline-primary btn-sm" disabled title="Coming soon">
+                                            <i class="fas fa-cog me-2"></i>Configure 2FA
+                                        </button>
+                                    }
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">Session Management</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Session Timeout (minutes)</label>
+                                        <input type="number" class="form-control" @bind="viewModel.SessionTimeout" min="15" max="480" />
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6 class="text-muted">Account Management</h6>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button type="button" class="btn btn-outline-info btn-sm" disabled title="Coming soon">
+                                            <i class="fas fa-download me-2"></i>Export My Data
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Coming soon">
+                                            <i class="fas fa-trash me-2"></i>Delete Account
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (activeTab == "files")
+                {
+                    <!-- File Settings Tab -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-folder me-2"></i>File Management Settings
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">Upload Settings</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Default Upload Category</label>
+                                        <select class="form-select" @bind="viewModel.DefaultUploadCategory">
+                                            <option value="">Select Default Category</option>
+                                            @foreach (var category in viewModel.AvailableCategories)
+                                            {
+                                                <option value="@category">@category</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Maximum File Size (MB)</label>
+                                        <input type="number" class="form-control" @bind="viewModel.MaxFileSize" min="1" max="500" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">File Management</h6>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" @bind="viewModel.AutoCategorize" id="autoCat">
+                                        <label class="form-check-label" for="autoCat">Auto-categorize Files</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" @bind="viewModel.DeleteConfirmation" id="deleteConf">
+                                        <label class="form-check-label" for="deleteConf">Delete Confirmation</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (activeTab == "system")
+                {
+                    <!-- System Info Tab -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-info-circle me-2"></i>System Information
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">Account Information</h6>
+                                    <div class="info-item">
+                                        <span class="info-label">Account Created:</span>
+                                        <span class="info-value">@viewModel.AccountCreated.ToString("MMM dd, yyyy")</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Last Login:</span>
+                                        <span class="info-value">@viewModel.LastLogin.ToString("MMM dd, yyyy HH:mm")</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Last Login IP:</span>
+                                        <span class="info-value">@viewModel.LastLoginIP</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">User Role:</span>
+                                        <span class="badge bg-primary">@viewModel.UserRole</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <h6 class="text-muted">Usage Statistics</h6>
+                                    <div class="info-item">
+                                        <span class="info-label">Total Files Uploaded:</span>
+                                        <span class="info-value">@viewModel.TotalFilesUploaded</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Total Storage Used:</span>
+                                        <span class="info-value">@FormatFileSize(viewModel.TotalStorageUsed)</span>
+                                    </div>
+                                    <div class="progress mt-2">
+                                        @{
+                                            double usagePercentage = ((double)viewModel.TotalStorageUsed / (5L * 1024 * 1024 * 1024)) * 100; // 5GB limit
+                                        }
+                                        <div class="progress-bar" style="width: @(usagePercentage)%">
+                                            @usagePercentage.ToString("0.1")%
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Storage usage out of 5GB limit</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Toast Container -->
+<ToastContainer />
+
+@code {
+    // Component logic is handled in SettingsBase.cs
+}

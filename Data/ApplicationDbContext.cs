@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<FileActivity> FileActivities { get; set; }
     public DbSet<FileCategory> FileCategories { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<UserPreferences> UserPreferences { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -103,6 +104,34 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.LastLoginAt);
             
             entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        // Configure UserPreferences
+        modelBuilder.Entity<UserPreferences>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.Language).IsRequired().HasMaxLength(10).HasDefaultValue("en");
+            entity.Property(e => e.DefaultUploadCategory).HasMaxLength(100);
+            entity.Property(e => e.DarkMode).IsRequired().HasDefaultValue(false);
+            entity.Property(e => e.ItemsPerPage).IsRequired().HasDefaultValue(25);
+            entity.Property(e => e.AutoSave).IsRequired().HasDefaultValue(true);
+            entity.Property(e => e.EmailNotifications).IsRequired().HasDefaultValue(true);
+            entity.Property(e => e.BrowserNotifications).IsRequired().HasDefaultValue(true);
+            entity.Property(e => e.MaxFileSize).IsRequired().HasDefaultValue(50);
+            entity.Property(e => e.AutoCategorize).IsRequired().HasDefaultValue(true);
+            entity.Property(e => e.DeleteConfirmation).IsRequired().HasDefaultValue(true);
+            entity.Property(e => e.TwoFactorEnabled).IsRequired().HasDefaultValue(false);
+            entity.Property(e => e.SessionTimeout).IsRequired().HasDefaultValue(120);
+            entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+            
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasIndex(e => e.UserId).IsUnique();
         });
 
         // Seed data
