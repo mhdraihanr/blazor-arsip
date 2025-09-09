@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Server.IISIntegration;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
+// Note: Settings functionality will use custom User model for now
+
 // Add custom services
 builder.Services.AddScoped<IFileService, FileService>();
 
@@ -31,6 +35,9 @@ builder.Services.AddScoped<IToastService, ToastService>();
 // Tambah CurrentUserService untuk menyediakan data user saat ini
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// Add User Settings Service
+builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
 
 // Add HttpContextAccessor for authentication
 builder.Services.AddHttpContextAccessor();

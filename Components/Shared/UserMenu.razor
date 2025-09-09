@@ -32,8 +32,8 @@
 
     <ul class="dropdown-menu dropdown-menu-end @((IsOpen ? "show" : ""))" 
         aria-labelledby="dropdownMenuButton">
-        <li><a class="dropdown-item" href="#" @onclick="Profile"><i class="fas fa-user me-2"></i>Profil Pengguna</a></li>
-        <li><a class="dropdown-item" href="#" @onclick="AccountSettings"><i class="fas fa-cog me-2"></i>Pengaturan Akun</a></li>
+        <li><a class="dropdown-item" href="settings" @onclick="() => IsOpen = false"><i class="fas fa-user me-2"></i>Profil Pengguna</a></li>
+        <li><a class="dropdown-item" href="settings" @onclick="() => IsOpen = false"><i class="fas fa-cog me-2"></i>Pengaturan Akun</a></li>
         <li><hr class="dropdown-divider" /></li>
         <li>
             <form method="post" action="/Account/Logout">
@@ -113,20 +113,6 @@
         var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 1) return parts[0][0].ToString().ToUpperInvariant();
         return (parts[0][0].ToString() + parts[^1][0].ToString()).ToUpperInvariant();
-    }
-
-    private Task Profile()
-    {
-        IsOpen = false;
-        // TODO: Navigate to profile page when available
-        return Task.CompletedTask;
-    }
-
-    private Task AccountSettings()
-    {
-        IsOpen = false;
-        // TODO: Navigate to account settings when available
-        return Task.CompletedTask;
     }
 
 

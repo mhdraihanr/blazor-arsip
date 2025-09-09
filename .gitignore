@@ -17,6 +17,10 @@ obj/
 .env.local
 .env.development
 .env.production
+.env.mcp
+
+# MCP Configuration
+.mcp-config.json
 
 # Secrets
 appsettings.Development.json
