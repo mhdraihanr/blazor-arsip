@@ -727,18 +727,36 @@ th div {
 [data-theme="dark"] .search-box input {
   background-color: #2d3748;
   border-color: #4a5568;
-  color: #f8f9fa;
+  color: #f7fafc !important;
 }
 
 [data-theme="dark"] .search-box input::placeholder {
-  color: #a0aec0;
+  color: #a0aec0 !important;
 }
 
 [data-theme="dark"] .search-box input:focus {
   background-color: #2d3748;
   border-color: #63b3ed;
-  color: #f8f9fa;
+  color: #f7fafc !important;
   box-shadow: 0 0 0 0.2rem rgba(99, 179, 237, 0.25);
+}
+
+/* Ensure search box text is visible in all dark mode scenarios */
+[data-theme="dark"] .search-box input[type="text"] {
+  color: #f7fafc !important;
+  background-color: #2d3748 !important;
+}
+
+[data-theme="dark"] .search-box .form-control {
+  color: #f7fafc !important;
+  background-color: #2d3748 !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .search-box .form-control:focus {
+  color: #f7fafc !important;
+  background-color: #2d3748 !important;
+  border-color: #63b3ed !important;
 }
 
 /* Dark mode styling for main search and filter inputs */

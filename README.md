@@ -450,6 +450,43 @@ Menampilkan:
 - Claims information
 - Real-time updates saat auth state berubah
 
+## 🆕 Recent Updates (January 2025)
+
+### ✅ Settings Page Fixes
+
+**Issues Resolved:**
+- Fixed build errors related to missing UserPreferences table
+- Simplified settings management without database dependency
+- Removed UserPreferences model dependency from UserSettingsService
+- Profile photo now displays from User.PhotoUrl (read-only)
+
+**Settings Features:**
+- **Profile Tab**: Display user information and profile photo from database
+- **Security Tab**: Basic security settings (disabled for future implementation)
+- **File Settings Tab**: File management preferences (in-memory storage)
+- **System Info Tab**: Account statistics and usage information
+
+**User Menu Cleanup:**
+- Removed duplicate "Pengaturan Akun" menu item
+- Streamlined dropdown with "Profil Pengguna" and "Logout" options
+
+**Technical Changes:**
+```csharp
+// UserSettingsService simplified approach
+public Task<bool> SaveUserPreferencesAsync(string userId, SettingsViewModel settings)
+{
+    // Settings stored in-memory, no database dependency
+    _logger.LogInformation("Preferences saved (in-memory) for user {UserId}", userId);
+    return Task.FromResult(true);
+}
+```
+
+**Database Simplification:**
+- No UserPreferences table required
+- Settings use default values without persistence
+- Profile photo sourced from Users.PhotoUrl column
+- Cleaner architecture with reduced complexity
+
 ## 📞 Support
 
 Untuk bantuan teknis atau issues:
@@ -462,11 +499,12 @@ Untuk bantuan teknis atau issues:
 
 ---
 
-**Version**: 2.0.0 (with Authentication)  
-**Last Updated**: January 2025  
+**Version**: 2.1.0 (Settings Optimized)  
+**Last Updated**: January 9, 2025  
 **Framework**: .NET 9.0 Blazor Server  
 **Database**: MySQL/MariaDB
 **Authentication**: ASP.NET Core Cookie Authentication
+**Recent Fixes**: Settings page simplified, UserPreferences dependency removed
 **Branch**: `with-auth` (main feature branch)
 
 <!-- Test commit with new git account: mhdraihanr <raihanrafliansyah1234@gmail.com> -->

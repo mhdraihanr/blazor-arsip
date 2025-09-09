@@ -18,25 +18,8 @@ namespace blazor_arsip.Components.Pages.Settings
         [Display(Name = "Profile Picture")]
         public string? ProfilePicture { get; set; }
 
-        // Application Settings
-        [Display(Name = "Dark Mode")]
-        public bool DarkMode { get; set; } = false;
-
-        [Display(Name = "Language")]
-        public string Language { get; set; } = "en";
-
-        [Display(Name = "Items per Page")]
-        [Range(10, 100)]
-        public int ItemsPerPage { get; set; } = 25;
-
-        [Display(Name = "Auto-save")]
-        public bool AutoSave { get; set; } = true;
-
-        [Display(Name = "Email Notifications")]
-        public bool EmailNotifications { get; set; } = true;
-
-        [Display(Name = "Browser Notifications")]
-        public bool BrowserNotifications { get; set; } = true;
+        // Note: Application preferences (DarkMode, Language, etc.) have been removed
+        // These settings are now handled globally or locally as needed
 
         // Security Settings
         [Display(Name = "Two-Factor Authentication")]
@@ -69,12 +52,6 @@ namespace blazor_arsip.Components.Pages.Settings
         public long TotalStorageUsed { get; set; } = 0;
 
         // Available options
-        public List<string> AvailableLanguages { get; set; } = new()
-        {
-            "en", "id"
-        };
-
-
         public List<string> AvailableCategories { get; set; } = new()
         {
             "Documents", "Images", "Videos", "Archives", "Spreadsheets", "Presentations"

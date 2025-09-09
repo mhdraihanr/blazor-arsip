@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("blazor-arsip")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e74e2268b04b7f28245133ea7ce076f79e43206")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aea957f46a6b29e5c1322032b0357883f01b2183")]
 [assembly: System.Reflection.AssemblyProductAttribute("blazor-arsip")]
 [assembly: System.Reflection.AssemblyTitleAttribute("blazor-arsip")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

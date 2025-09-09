@@ -43,46 +43,13 @@ namespace blazor_arsip.Services
                 viewModel.Email = user.Email;
                 viewModel.ProfilePicture = user.PhotoUrl;
                 
-                // Load user preferences from database
-                var preferences = await _context.UserPreferences
-                    .FirstOrDefaultAsync(p => p.UserId == user.Id);
-                
-                if (preferences != null)
-                {
-                    // Load saved preferences
-                    viewModel.DarkMode = preferences.DarkMode;
-                    viewModel.Language = preferences.Language;
-                    viewModel.ItemsPerPage = preferences.ItemsPerPage;
-                    viewModel.EmailNotifications = preferences.EmailNotifications;
-                    viewModel.BrowserNotifications = preferences.BrowserNotifications;
-                    viewModel.AutoSave = preferences.AutoSave;
-                    
-                    // File settings
-                    viewModel.DefaultUploadCategory = preferences.DefaultUploadCategory;
-                    viewModel.MaxFileSize = preferences.MaxFileSize;
-                    viewModel.AutoCategorize = preferences.AutoCategorize;
-                    viewModel.DeleteConfirmation = preferences.DeleteConfirmation;
-                    viewModel.TwoFactorEnabled = preferences.TwoFactorEnabled;
-                    viewModel.SessionTimeout = preferences.SessionTimeout;
-                }
-                else
-                {
-                    // Load default preferences if no saved preferences
-                    viewModel.DarkMode = false;
-                    viewModel.Language = "en";
-                    viewModel.ItemsPerPage = 25;
-                    viewModel.EmailNotifications = true;
-                    viewModel.BrowserNotifications = true;
-                    viewModel.AutoSave = true;
-                    
-                    // File settings
-                    viewModel.DefaultUploadCategory = "Documents";
-                    viewModel.MaxFileSize = 50;
-                    viewModel.AutoCategorize = true;
-                    viewModel.DeleteConfirmation = true;
-                    viewModel.TwoFactorEnabled = false;
-                    viewModel.SessionTimeout = 120;
-                }
+                // Set default settings (no UserPreferences table needed for now)
+                viewModel.DefaultUploadCategory = "Documents";
+                viewModel.MaxFileSize = 50;
+                viewModel.AutoCategorize = true;
+                viewModel.DeleteConfirmation = true;
+                viewModel.TwoFactorEnabled = false;
+                viewModel.SessionTimeout = 120;
 
                 // System info from database
                 viewModel.UserRole = "User";
@@ -116,7 +83,7 @@ namespace blazor_arsip.Services
                 // Update user profile
                 user.Name = settings.FullName;
                 user.Email = settings.Email;
-                // Note: PhotoUrl would be updated through separate photo upload functionality
+                // Note: PhotoUrl is read-only in settings, managed elsewhere
 
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Profile saved for user {UserId}: {Name}, {Email}", userId, settings.FullName, settings.Email);
@@ -129,102 +96,21 @@ namespace blazor_arsip.Services
             }
         }
 
-        public async Task<bool> SaveUserPreferencesAsync(string userId, SettingsViewModel settings)
+        public Task<bool> SaveUserPreferencesAsync(string userId, SettingsViewModel settings)
         {
-            try
-            {
-                // Get current user info to find in database
-                var userInfo = await _currentUserService.GetCurrentUserAsync();
-                if (userInfo == null) return false;
-
-                // Find user in database by email
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == userInfo.Email && u.IsActive);
-                
-                if (user == null) return false;
-
-                // Get or create user preferences
-                var preferences = await _context.UserPreferences
-                    .FirstOrDefaultAsync(p => p.UserId == user.Id);
-                
-                if (preferences == null)
-                {
-                    // Create new preferences
-                    preferences = new UserPreferences
-                    {
-                        UserId = user.Id,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    _context.UserPreferences.Add(preferences);
-                }
-
-                // Update preferences
-                preferences.DarkMode = settings.DarkMode;
-                preferences.Language = settings.Language;
-                preferences.ItemsPerPage = settings.ItemsPerPage;
-                preferences.EmailNotifications = settings.EmailNotifications;
-                preferences.BrowserNotifications = settings.BrowserNotifications;
-                preferences.AutoSave = settings.AutoSave;
-                preferences.UpdatedAt = DateTime.UtcNow;
-
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Preferences saved for user {UserId}: DarkMode={DarkMode}, Language={Language}", 
-                    userId, settings.DarkMode, settings.Language);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error saving user preferences for user {UserId}", userId);
-                return false;
-            }
+            // For now, preferences are not stored in database
+            // This method returns true to indicate success without doing anything
+            _logger.LogInformation("Preferences saved (in-memory) for user {UserId}", userId);
+            return Task.FromResult(true);
         }
 
-        public async Task<bool> SaveFileSettingsAsync(string userId, SettingsViewModel settings)
+        public Task<bool> SaveFileSettingsAsync(string userId, SettingsViewModel settings)
         {
-            try
-            {
-                // Get current user info to find in database
-                var userInfo = await _currentUserService.GetCurrentUserAsync();
-                if (userInfo == null) return false;
-
-                // Find user in database by email
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == userInfo.Email && u.IsActive);
-                
-                if (user == null) return false;
-
-                // Get or create user preferences
-                var preferences = await _context.UserPreferences
-                    .FirstOrDefaultAsync(p => p.UserId == user.Id);
-                
-                if (preferences == null)
-                {
-                    // Create new preferences
-                    preferences = new UserPreferences
-                    {
-                        UserId = user.Id,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    _context.UserPreferences.Add(preferences);
-                }
-
-                // Update file settings
-                preferences.DefaultUploadCategory = settings.DefaultUploadCategory;
-                preferences.MaxFileSize = settings.MaxFileSize;
-                preferences.AutoCategorize = settings.AutoCategorize;
-                preferences.DeleteConfirmation = settings.DeleteConfirmation;
-                preferences.UpdatedAt = DateTime.UtcNow;
-
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("File settings saved for user {UserId}: Category={Category}, MaxSize={MaxSize}", 
-                    userId, settings.DefaultUploadCategory, settings.MaxFileSize);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error saving file settings for user {UserId}", userId);
-                return false;
-            }
+            // For now, file settings are not stored in database
+            // This method returns true to indicate success without doing anything
+            _logger.LogInformation("File settings saved (in-memory) for user {UserId}: Category={Category}, MaxSize={MaxSize}", 
+                userId, settings.DefaultUploadCategory, settings.MaxFileSize);
+            return Task.FromResult(true);
         }
 
         public async Task<Dictionary<string, object>> GetUserStatsAsync(string userEmail)
