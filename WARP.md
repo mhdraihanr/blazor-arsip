@@ -79,11 +79,12 @@ Program.cs
 ```
 
 ### Database Schema
-- **Users**: Authentication and user profiles
+- **Users**: Authentication and user profiles (includes PhotoUrl for profile pics)
 - **FileRecords**: Main file metadata storage
 - **FileVersions**: File version tracking
 - **FileActivities**: Activity logging
 - **FileCategories**: File categorization (seeded with defaults)
+- **UserPreferences**: Removed - settings now use in-memory defaults
 
 ### Component Structure
 ```
@@ -223,3 +224,55 @@ dotnet watch run --shutdown
 - Password hashing uses BCrypt
 - Connection strings should use environment variables in production
 - Prepared statements prevent SQL injection via EF Core
+
+## Recent Architecture Changes (January 2025)
+
+### Settings Management Simplification
+
+**Problem Solved:**
+- Build errors due to missing UserPreferences table
+- Database complexity for simple user settings
+- Runtime errors when accessing settings page
+
+**Solution Implemented:**
+```csharp
+// Before: Complex database-dependent settings
+var preferences = await _context.UserPreferences
+    .FirstOrDefaultAsync(p => p.UserId == user.Id);
+
+// After: Simple in-memory defaults
+viewModel.DefaultUploadCategory = "Documents";
+viewModel.MaxFileSize = 50;
+viewModel.AutoCategorize = true;
+```
+
+**Updated Service Pattern:**
+- UserSettingsService no longer depends on UserPreferences table
+- Settings use sensible defaults without database persistence
+- Profile information sourced from Users table directly
+- Async methods simplified to avoid unnecessary complexity
+
+**UI Component Changes:**
+- UserMenu.razor cleaned up (removed duplicate "Pengaturan Akun")
+- Settings page shows profile photo from Users.PhotoUrl (read-only)
+- File settings stored in-memory for session duration
+
+**Migration Strategy:**
+- No database migrations needed
+- Existing UserPreferences migration can remain in history
+- Application works regardless of UserPreferences table presence
+
+### Development Impact
+
+**Benefits:**
+- Reduced database complexity
+- Faster development iteration
+- No migration dependencies for settings
+- Cleaner separation of concerns
+
+**When to Restore Database Settings:**
+If persistent user settings are needed in future:
+1. Create new UserPreferences migration
+2. Update UserSettingsService to use database
+3. Add proper error handling for missing table
+4. Implement settings synchronization

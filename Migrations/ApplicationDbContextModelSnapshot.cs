@@ -68,7 +68,7 @@ namespace blazor_arsip.Migrations
 
                     b.HasIndex("PerformedAt");
 
-                    b.ToTable("FileActivities");
+                    b.ToTable("FileActivities", (string)null);
                 });
 
             modelBuilder.Entity("blazor_arsip.Models.FileCategory", b =>
@@ -113,7 +113,7 @@ namespace blazor_arsip.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("FileCategories");
+                    b.ToTable("FileCategories", (string)null);
 
                     b.HasData(
                         new
@@ -293,7 +293,7 @@ namespace blazor_arsip.Migrations
 
                     b.HasIndex("UploadedAt");
 
-                    b.ToTable("FileRecords");
+                    b.ToTable("FileRecords", (string)null);
                 });
 
             modelBuilder.Entity("blazor_arsip.Models.FileVersion", b =>
@@ -347,7 +347,7 @@ namespace blazor_arsip.Migrations
 
                     b.HasIndex("VersionNumber");
 
-                    b.ToTable("FileVersions");
+                    b.ToTable("FileVersions", (string)null);
                 });
 
             modelBuilder.Entity("blazor_arsip.Models.User", b =>
@@ -395,7 +395,7 @@ namespace blazor_arsip.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasData(
                         new
@@ -514,7 +514,7 @@ namespace blazor_arsip.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserPreferences");
+                    b.ToTable("UserPreferences", (string)null);
                 });
 
             modelBuilder.Entity("blazor_arsip.Models.FileActivity", b =>

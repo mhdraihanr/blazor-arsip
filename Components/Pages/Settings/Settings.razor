@@ -15,7 +15,7 @@
                 <h1 class="h4 text-gray-800 mb-0">
                     <i class="fas fa-cog me-2"></i>Settings
                 </h1>
-                @if (activeTab != "profile")
+@if (activeTab != "profile" && activeTab != "system")
                 {
                     <div class="d-flex gap-2">
                         <button class="btn btn-secondary btn-sm" @onclick="ResetToDefaults" disabled="@(isLoading || isSaving)">
@@ -56,9 +56,6 @@
                         <div class="nav nav-pills flex-column settings-nav" role="tablist">
                             <button class="nav-link @(activeTab == "profile" ? "active" : "")" @onclick='() => SetActiveTab("profile")'>
                                 <i class="fas fa-user me-2"></i>Profile
-                            </button>
-                            <button class="nav-link @(activeTab == "preferences" ? "active" : "")" @onclick='() => SetActiveTab("preferences")'>
-                                <i class="fas fa-sliders-h me-2"></i>Preferences
                             </button>
                             <button class="nav-link disabled" disabled title="Security settings coming soon">
                                 <i class="fas fa-shield-alt me-2"></i>Security
@@ -124,54 +121,6 @@
                                                 <span class="profile-value">@viewModel.LastLogin.ToString("MMM dd, yyyy HH:mm")</span>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                else if (activeTab == "preferences")
-                {
-                    <!-- Preferences Tab -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header">
-                            <h6 class="m-0 font-weight-bold text-primary">
-                                <i class="fas fa-sliders-h me-2"></i>Application Preferences
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <h6 class="text-muted">Interface Settings</h6>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" @bind="viewModel.DarkMode" id="darkMode">
-                                        <label class="form-check-label" for="darkMode">Dark Mode</label>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Language</label>
-                                        <select class="form-select" @bind="viewModel.Language">
-                                            <option value="en">English</option>
-                                            <option value="id">Indonesian</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Items per Page</label>
-                                        <input type="number" class="form-control" @bind="viewModel.ItemsPerPage" min="10" max="100" />
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <h6 class="text-muted">Notifications</h6>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" @bind="viewModel.EmailNotifications" id="emailNotif">
-                                        <label class="form-check-label" for="emailNotif">Email Notifications</label>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" @bind="viewModel.BrowserNotifications" id="browserNotif">
-                                        <label class="form-check-label" for="browserNotif">Browser Notifications</label>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" @bind="viewModel.AutoSave" id="autoSave">
-                                        <label class="form-check-label" for="autoSave">Auto-save</label>
                                     </div>
                                 </div>
                             </div>

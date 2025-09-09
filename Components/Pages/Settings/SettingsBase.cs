@@ -94,19 +94,14 @@ namespace blazor_arsip.Components.Pages.Settings
                         // Save all settings based on active tab
                         bool success = false;
                         
-                        if (activeTab == "preferences")
-                        {
-                            success = await UserSettingsService.SaveUserPreferencesAsync(userEmail, viewModel);
-                        }
-                        else if (activeTab == "files")
+                        if (activeTab == "files")
                         {
                             success = await UserSettingsService.SaveFileSettingsAsync(userEmail, viewModel);
                         }
                         else
                         {
-                            // Save all if not on specific tab (excluding profile)
-                            success = await UserSettingsService.SaveUserPreferencesAsync(userEmail, viewModel) &&
-                                     await UserSettingsService.SaveFileSettingsAsync(userEmail, viewModel);
+                            // Save file settings (excluding profile and system tabs)
+                            success = await UserSettingsService.SaveFileSettingsAsync(userEmail, viewModel);
                         }
 
                         if (success)
@@ -139,14 +134,7 @@ namespace blazor_arsip.Components.Pages.Settings
         {
             try
             {
-                // Reset to default values
-                viewModel.DarkMode = false;
-                viewModel.Language = "en";
-                viewModel.ItemsPerPage = 25;
-                viewModel.AutoSave = true;
-                viewModel.EmailNotifications = true;
-                viewModel.BrowserNotifications = true;
-                viewModel.SessionTimeout = 120;
+                // Reset file management settings to default values
                 viewModel.DefaultUploadCategory = "Documents";
                 viewModel.AutoCategorize = true;
                 viewModel.DeleteConfirmation = true;
