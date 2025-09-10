@@ -1,18 +1,99 @@
-.user-menu { position: relative; }
-.user-button { border: 1px solid #e3e6f0; border-radius: 999px; padding: 6px 10px; background-color: #fff; }
-.user-button:hover { background-color: #f8f9fa; }
+.user-menu {
+  position: relative;
+}
 
-.avatar { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #e9ecef; display: flex; align-items: center; justify-content: center; }
-.avatar-img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-initials { font-weight: 600; color: #495057; }
+.user-button {
+  border: 1px solid #e3e6f0;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background-color: #fff;
+  cursor: pointer;
+}
 
-.user-name { font-weight: 600; line-height: 1; }
-.user-email { line-height: 1; }
+.user-button:hover {
+  background-color: #f8f9fa;
+}
 
-.dropdown-menu { min-width: 220px; }
-.dropdown-item { font-size: 0.95rem; }
+.user-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-initials {
+  font-weight: 600;
+  color: #495057;
+}
+
+.user-name {
+  font-weight: 600;
+  line-height: 1;
+}
+
+.user-email {
+  line-height: 1;
+}
+
+/* Use Bootstrap's default dropdown styles, just override min-width */
+.user-menu .dropdown-menu {
+  min-width: 220px;
+}
+
+.dropdown-item {
+  font-size: 0.95rem;
+}
 
 /* Dark mode */
-:root[data-theme='dark'] .user-button { background-color: #2b2b2b; border-color: #3a3a3a; }
-:root[data-theme='dark'] .user-button:hover { background-color: #363636; }
-:root[data-theme='dark'] .avatar { background: #3a3a3a; }
+:root[data-theme="dark"] .user-button {
+  background-color: #2b2b2b;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+:root[data-theme="dark"] .user-button:hover {
+  background-color: #363636;
+}
+
+:root[data-theme="dark"] .avatar {
+  background: #3a3a3a;
+}
+
+:root[data-theme="dark"] .dropdown-menu {
+  background-color: #2a2a2a;
+  border-color: #404040;
+  color: #e0e0e0;
+}
+
+:root[data-theme="dark"] .dropdown-item {
+  color: #e0e0e0;
+}
+
+:root[data-theme="dark"] .dropdown-item:hover,
+:root[data-theme="dark"] .dropdown-item:focus {
+  color: #ffffff;
+  background-color: #404040;
+}
+
+:root[data-theme="dark"] .dropdown-divider {
+  border-top-color: #404040;
+}
+
+:root[data-theme="dark"] .text-muted {
+  color: #888888 !important;
+}

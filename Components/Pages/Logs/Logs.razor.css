@@ -1,0 +1,528 @@
+/* Logs Page Styling */
+.logs-container {
+  padding: 0;
+}
+
+/* Activity Icon Styling */
+.activity-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px auto;
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.activity-icon i {
+  font-size: 14px;
+}
+
+/* Table Responsive Styling */
+.logs-table-container {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.logs-table {
+  margin-bottom: 0;
+  font-size: 0.875rem;
+}
+
+.logs-table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 8px;
+  white-space: nowrap;
+  color: #212529;
+}
+
+.logs-table td {
+  padding: 12px 8px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  color: #212529;
+}
+
+.logs-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* User Column Styling */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #212529;
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+/* File Info Styling */
+.file-info {
+  min-width: 300px;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #212529;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  max-width: 350px;
+}
+
+.file-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.file-size {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+/* Activity Badge Styling */
+.activity-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* Date Styling */
+.date-info {
+  min-width: 100px;
+  font-size: 0.8rem;
+}
+
+.date-primary {
+  font-weight: 600;
+  color: #212529;
+  line-height: 1.2;
+}
+
+.date-secondary {
+  color: #6c757d;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+/* Description Styling */
+.description-text {
+  max-width: 180px;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+/* IP Address Styling */
+.ip-address {
+  font-family: "Courier New", monospace;
+  font-size: 0.75rem;
+  background-color: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  color: #212529;
+}
+
+/* Filter Card Styling */
+.filter-card {
+  border: none;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+.filter-card .card-header {
+  border-radius: 10px 10px 0 0 !important;
+  border: none;
+}
+
+/* Pagination Styling */
+.pagination-container {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 0 0 8px 8px;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Removed old media query dark mode - using [data-theme="dark"] instead */
+
+/* Dark mode class-based (for manual toggle) - Match FileList styling */
+[data-theme="dark"] .logs-table {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+/* Override Bootstrap table color CSS variables */
+[data-theme="dark"] .logs-table,
+[data-theme="dark"] .logs-table > :not(caption) > * > * {
+  --bs-table-color: #ffffff !important;
+  --bs-table-color-type: #ffffff !important;
+  --bs-table-color-state: #ffffff !important;
+  --bs-table-bg: transparent !important;
+  --bs-table-bg-type: transparent !important;
+  --bs-table-bg-state: transparent !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .logs-table th {
+  background-color: #3a4556;
+  border-bottom: 2px solid #5a6c85;
+  color: #f7fafc !important;
+}
+
+[data-theme="dark"] .logs-table td {
+  border-color: #4a5568;
+  color: #e2e8f0 !important;
+}
+
+/* Override Bootstrap table padding and ensure color inheritance */
+[data-theme="dark"] .table > :not(caption) > * > * {
+  padding: 0.5rem 0.5rem;
+  color: inherit !important;
+}
+
+[data-theme="dark"] .logs-table tbody tr:hover {
+  background-color: rgba(66, 153, 225, 0.1);
+}
+
+[data-theme="dark"] .user-name,
+[data-theme="dark"] .file-name,
+[data-theme="dark"] .date-primary {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .file-size,
+[data-theme="dark"] .date-secondary {
+  color: #888888 !important;
+}
+
+[data-theme="dark"] .ip-address {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .pagination-container {
+  background-color: #2d3748;
+  border-top-color: #4a5568;
+}
+
+[data-theme="dark"] .logs-table-container {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .filter-card {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .filter-card .card-header {
+  background-color: #3a4556;
+  border-bottom-color: #4a5568;
+}
+
+[data-theme="dark"] .filter-card .card-body {
+  background-color: #2d3748;
+}
+
+[data-theme="dark"] .activity-badge {
+  color: #ffffff;
+}
+
+/* Activity Type Badge Colors for Light Mode */
+.activity-badge {
+  color: #ffffff;
+}
+
+/* Upload activity - Green */
+.activity-badge[data-activity="upload"],
+.activity-badge.bg-success {
+  background-color: #28a745 !important;
+  color: #ffffff !important;
+}
+
+/* Download activity - Blue */
+.activity-badge[data-activity="download"],
+.activity-badge.bg-info {
+  background-color: #17a2b8 !important;
+  color: #ffffff !important;
+}
+
+/* Update/Edit activity - Orange */
+.activity-badge[data-activity="update"],
+.activity-badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+/* Delete activity - Red */
+.activity-badge[data-activity="delete"],
+.activity-badge.bg-danger {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+}
+
+/* View activity - Purple */
+.activity-badge[data-activity="view"],
+.activity-badge.bg-primary {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+}
+
+/* Other activities - Gray */
+.activity-badge.bg-secondary {
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+}
+
+/* Dark Mode Badge Colors */
+[data-theme="dark"] .activity-badge {
+  color: #ffffff !important;
+}
+
+/* Upload activity - Dark mode green */
+[data-theme="dark"] .activity-badge[data-activity="upload"],
+[data-theme="dark"] .activity-badge.bg-success {
+  background-color: #48bb78 !important;
+  color: #ffffff !important;
+}
+
+/* Download activity - Dark mode blue */
+[data-theme="dark"] .activity-badge[data-activity="download"],
+[data-theme="dark"] .activity-badge.bg-info {
+  background-color: #4299e1 !important;
+  color: #ffffff !important;
+}
+
+/* Update/Edit activity - Dark mode orange */
+[data-theme="dark"] .activity-badge[data-activity="update"],
+[data-theme="dark"] .activity-badge.bg-warning {
+  background-color: #ed8936 !important;
+  color: #ffffff !important;
+}
+
+/* Delete activity - Dark mode red */
+[data-theme="dark"] .activity-badge[data-activity="delete"],
+[data-theme="dark"] .activity-badge.bg-danger {
+  background-color: #f56565 !important;
+  color: #ffffff !important;
+}
+
+/* View activity - Dark mode purple */
+[data-theme="dark"] .activity-badge[data-activity="view"],
+[data-theme="dark"] .activity-badge.bg-primary {
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
+}
+
+/* Other activities - Dark mode gray */
+[data-theme="dark"] .activity-badge.bg-secondary {
+  background-color: #718096 !important;
+  color: #ffffff !important;
+}
+
+/* Dark mode activity icon styling */
+[data-theme="dark"] .activity-icon {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .activity-icon:hover {
+  background-color: #4b5563;
+  transform: scale(1.05);
+}
+
+/* Fix all font colors in dark mode to match app.css */
+[data-theme="dark"] .logs-table {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .logs-table th {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .logs-table td {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .logs-table th *,
+[data-theme="dark"] .logs-table td * {
+  color: inherit !important;
+}
+
+/* Specific overrides for muted text */
+[data-theme="dark"] .logs-table .text-muted {
+  color: #888888 !important;
+}
+
+[data-theme="dark"] .logs-table .file-size,
+[data-theme="dark"] .logs-table .date-secondary {
+  color: #888888 !important;
+}
+
+/* Category badge styling for dark mode */
+[data-theme="dark"] .logs-table .badge.bg-light,
+[data-theme="dark"] .logs-table .badge.bg-light.text-dark {
+  background-color: #4299e1 !important;
+  color: #ffffff !important;
+}
+
+/* Override Bootstrap .bg-light for dark mode */
+[data-theme="dark"] .bg-light {
+  --bs-bg-opacity: 1;
+  --bs-light-rgb: 66, 153, 225; /* RGB values for #4299e1 */
+  background-color: rgba(66, 153, 225, var(--bs-bg-opacity)) !important;
+  color: #ffffff !important;
+}
+
+/* Ensure text contrast on bg-light in dark mode */
+[data-theme="dark"] .bg-light.text-dark,
+[data-theme="dark"] .bg-light .text-dark {
+  color: #ffffff !important;
+}
+
+/* Search and filter form styling for dark mode - match app.css */
+[data-theme="dark"] .filter-card input.form-control {
+  background-color: #2a2a2a !important;
+  border-color: #404040 !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .filter-card input.form-control::placeholder {
+  color: #888888 !important;
+}
+
+[data-theme="dark"] .filter-card input.form-control:focus {
+  background-color: #2a2a2a !important;
+  border-color: #0d6efd !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+[data-theme="dark"] .filter-card select.form-select {
+  background-color: #2a2a2a !important;
+  border-color: #404040 !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .filter-card select.form-select:focus {
+  background-color: #2a2a2a !important;
+  border-color: #0d6efd !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+[data-theme="dark"] .filter-card .form-label {
+  color: #e0e0e0 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .logs-table th,
+  .logs-table td {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+
+  .file-name {
+    max-width: 280px;
+  }
+
+  .description-text {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 992px) {
+  .logs-table {
+    font-size: 0.8rem;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    padding: 6px 4px;
+  }
+
+  .file-name {
+    max-width: 200px;
+  }
+
+  .description-text {
+    max-width: 100px;
+  }
+
+  .user-info {
+    min-width: 110px;
+  }
+
+  .file-info {
+    min-width: 180px;
+  }
+
+  .activity-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
+  }
+
+  .activity-icon i {
+    font-size: 13px;
+  }
+
+  .activity-badge {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+    min-width: 55px;
+  }
+}
+
+@media (max-width: 768px) {
+  .logs-table {
+    font-size: 0.75rem;
+  }
+
+  .activity-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 6px;
+  }
+
+  .activity-icon i {
+    font-size: 12px;
+  }
+
+  .activity-badge {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+    min-width: 50px;
+  }
+
+  .file-name {
+    max-width: 150px;
+  }
+
+  .description-text {
+    max-width: 80px;
+  }
+}
