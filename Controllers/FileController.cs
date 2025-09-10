@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using blazor_arsip.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Mime;
+using System.Security.Claims;
 
 namespace blazor_arsip.Controllers;
 
@@ -53,7 +54,8 @@ public class FileController : ControllerBase
             // Log download activity
             var userAgent = Request.Headers.UserAgent.ToString();
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-            await _fileService.LogActivityAsync(id, "Download", "Anonymous", 
+            var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value ?? "Anonymous";
+            await _fileService.LogActivityAsync(id, "Download", userEmail, 
                 $"File '{fileRecord.OriginalFileName}' downloaded", ipAddress, userAgent);
 
             // Update last accessed time

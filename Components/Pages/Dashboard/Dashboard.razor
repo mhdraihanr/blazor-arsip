@@ -49,17 +49,17 @@
                             </a>
                         </div>
                         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-                            <a href="/search" class="btn btn-success btn-lg w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-search me-2"></i>
-                                <span class="d-none d-sm-inline">Search Files</span>
-                                <span class="d-sm-none">Search</span>
+                            <a href="/logs" class="btn btn-success btn-lg w-100 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-history me-2"></i>
+                                <span class="d-none d-sm-inline">Logs</span>
+                                <span class="d-sm-none">Logs</span>
                             </a>
                         </div>
                         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-                            <a href="/categories" class="btn btn-warning btn-lg w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-tags me-2"></i>
-                                <span class="d-none d-sm-inline">Categories</span>
-                                <span class="d-sm-none">Tags</span>
+                            <a href="/settings" class="btn btn-warning btn-lg w-100 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-cog me-2"></i>
+                                <span class="d-none d-sm-inline">Settings</span>
+                                <span class="d-sm-none">Settings</span>
                             </a>
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
-                        <a href="/list" class="btn btn-sm btn-primary">View All</a>
+                        <a href="/logs" class="btn btn-sm btn-primary">View All</a>
                     </div>
                     <div class="card-body">
                         @if (viewModel.RecentActivities.Any())
@@ -273,7 +273,11 @@
                                                     @activity.FileRecord.OriginalFileName
                                                 </div>
                                                 <div class="text-muted small">
-                                                    by @activity.PerformedBy
+                                                    by @activity.PerformedByName
+                                                    @if (activity.PerformedByName != activity.PerformedBy)
+                                                    {
+                                                        <span class="text-muted">(@activity.PerformedBy)</span>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>

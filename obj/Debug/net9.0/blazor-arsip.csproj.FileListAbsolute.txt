@@ -185,11 +185,9 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\pjlm7a8w4h-d4r6k3f320.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\725iod6xov-j5mq2jizvt.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\23z4aslk6j-keugtjm085.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\g6eyztvnlt-nvvlpmu67g.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\z6t8xdqzsc-34r87zalsy.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\8qu8d0m6gm-pj5nd1wqec.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\0h55j9vbhc-43atpzeawx.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\jjvsbe3na0-v0zj4ognzu.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\zkk2wadahm-k3bjbro8j2.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\k9rau93zay-hrwsygsryq.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\7prbnp9mk0-c63t5i9ira.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\booiprrcge-ft3s53vfgj.gz
@@ -296,5 +294,8 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\a3ygkwa5zy-2z0ns9nrw6.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\nezrqnk58p-muycvpuwrr.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\v0zgfp0y55-87fc7y1x7t.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\yfc7ypekbg-mlv21k5csn.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-yrsrimp1ia.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-rnuvf1ea8b.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\Components\Pages\Logs\Logs.razor.rz.scp.css
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\zkk2wadahm-jsq5ks7hs9.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\z6t8xdqzsc-8uk4vl7x1t.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-5nssk7ekra.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-57lgnvod7z.gz

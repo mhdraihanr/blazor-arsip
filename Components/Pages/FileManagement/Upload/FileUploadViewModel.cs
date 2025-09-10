@@ -15,13 +15,15 @@ public class FileUploadViewModel
     private readonly IFileUploadService _fileUploadService;
     private readonly IJSRuntime _jsRuntime;
     private readonly IToastService _toastService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public FileUploadViewModel(IFileService fileService, IFileUploadService fileUploadService, IJSRuntime jsRuntime, IToastService toastService)
+    public FileUploadViewModel(IFileService fileService, IFileUploadService fileUploadService, IJSRuntime jsRuntime, IToastService toastService, ICurrentUserService currentUserService)
     {
         _fileService = fileService;
         _fileUploadService = fileUploadService;
         _jsRuntime = jsRuntime;
         _toastService = toastService;
+        _currentUserService = currentUserService;
         UploadModel = new UploadModel { Category = "Documents" };
     }
 
@@ -217,9 +219,12 @@ public class FileUploadViewModel
                         await Task.Delay(50); // Simulate upload time
                     }
 
+                    var currentUser = await _currentUserService.GetCurrentUserAsync();
+                    var userEmail = currentUser?.Email ?? "Anonymous";
+                    
                     await _fileService.UploadFileAsync(
                         formFile,
-                        "Current User", // In a real app, get from authentication
+                        userEmail,
                         UploadModel.Description,
                         UploadModel.Tags,
                         UploadModel.Category

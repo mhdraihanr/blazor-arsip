@@ -11,6 +11,7 @@ public class FileUploadBase : ComponentBase, IDisposable
     [Inject] protected IFileService FileService { get; set; } = default!;
     [Inject] protected IFileUploadService FileUploadService { get; set; } = default!;
     [Inject] protected IToastService ToastService { get; set; } = default!;
+    [Inject] protected ICurrentUserService CurrentUserService { get; set; } = default!;
     [Inject] protected NavigationManager Navigation { get; set; } = default!;
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
     
@@ -19,7 +20,7 @@ public class FileUploadBase : ComponentBase, IDisposable
     
     protected override void OnInitialized()
     {
-        viewModel = new FileUploadViewModel(FileService, FileUploadService, JSRuntime, ToastService);
+        viewModel = new FileUploadViewModel(FileService, FileUploadService, JSRuntime, ToastService, CurrentUserService);
     }
     
     protected override async Task OnInitializedAsync()
