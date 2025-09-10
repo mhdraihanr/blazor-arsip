@@ -269,7 +269,7 @@
   font-size: 0.75rem;
 }
 
-/* Custom font sizes for better readability */
+/* Custom font sizes for better readability - Standardized to match other pages */
 .fs-7 {
   font-size: 0.9rem !important;
 }
@@ -337,7 +337,7 @@
 }
 
 .d-flex div {
-  font-size: 0.85rem !important;
+  font-size: 1rem !important;
 }
 
 .btn-xs:hover {
