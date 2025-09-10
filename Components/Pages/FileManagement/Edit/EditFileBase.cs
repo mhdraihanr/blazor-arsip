@@ -9,13 +9,14 @@ public class EditFileBase : ComponentBase, IDisposable
     
     [Inject] protected IFileService FileService { get; set; } = default!;
     [Inject] protected IToastService ToastService { get; set; } = default!;
+    [Inject] protected ICurrentUserService CurrentUserService { get; set; } = default!;
     [Inject] protected NavigationManager Navigation { get; set; } = default!;
     
     protected EditFileViewModel viewModel = default!;
 
     protected override void OnInitialized()
     {
-        viewModel = new EditFileViewModel(FileService, ToastService);
+        viewModel = new EditFileViewModel(FileService, ToastService, CurrentUserService);
         viewModel.StateChanged += () => InvokeAsync(StateHasChanged);
     }
 

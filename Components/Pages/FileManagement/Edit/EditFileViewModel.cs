@@ -8,11 +8,13 @@ public class EditFileViewModel
 {
     private readonly IFileService _fileService;
     private readonly IToastService _toastService;
+    private readonly ICurrentUserService _currentUserService;
     
-    public EditFileViewModel(IFileService fileService, IToastService toastService)
+    public EditFileViewModel(IFileService fileService, IToastService toastService, ICurrentUserService currentUserService)
     {
         _fileService = fileService;
         _toastService = toastService;
+        _currentUserService = currentUserService;
         EditModel = new EditFileModel();
     }
     
@@ -72,10 +74,13 @@ public class EditFileViewModel
             if (FileRecord != null)
             {
                 FileRecord.FileName = EditModel.FileName;
+                var currentUser = await _currentUserService.GetCurrentUserAsync();
+                var userEmail = currentUser?.Email ?? "System";
+                
                 FileRecord.Description = EditModel.Description;
                 FileRecord.Tags = EditModel.Tags;
                 FileRecord.Category = EditModel.Category;
-                FileRecord.ModifiedBy = "System";
+                FileRecord.ModifiedBy = userEmail;
                 
                 await _fileService.UpdateFileAsync(FileRecord);
                 

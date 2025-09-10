@@ -1,5 +1,6 @@
 using blazor_arsip.Models;
 using blazor_arsip.Services;
+using blazor_arsip.Components.Pages.Logs;
 
 namespace blazor_arsip.Components.Pages.Dashboard;
 
@@ -19,7 +20,7 @@ public class DashboardViewModel
     public int TodayUploads { get; set; } = 0;
     public int TotalDownloads { get; set; } = 0;
     public List<dynamic> CategoryStats { get; set; } = new();
-    public List<FileActivity> RecentActivities { get; set; } = new();
+    public List<FileActivityWithUser> RecentActivities { get; set; } = new();
 
     // Methods
     public async Task LoadDashboardDataAsync()
@@ -33,7 +34,7 @@ public class DashboardViewModel
             TodayUploads = (int)stats["todayUploads"];
             TotalDownloads = (int)stats["totalDownloads"];
             CategoryStats = ((IEnumerable<dynamic>)stats["categoryStats"]).ToList();
-            RecentActivities = ((IEnumerable<FileActivity>)stats["recentActivities"]).ToList();
+            RecentActivities = ((IEnumerable<FileActivityWithUser>)stats["recentActivities"]).ToList();
         }
         catch (Exception ex)
         {

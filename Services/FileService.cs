@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using blazor_arsip.Data;
 using blazor_arsip.Models;
+using blazor_arsip.Components.Pages.Logs;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -20,6 +21,7 @@ public interface IFileService
     Task LogActivityAsync(int fileId, string activityType, string performedBy, string? description = null, string? ipAddress = null, string? userAgent = null);
     Task<IEnumerable<FileCategory>> GetCategoriesAsync();
     Task<Dictionary<string, object>> GetDashboardStatsAsync();
+    Task<ActivitiesResult> GetAllActivitiesWithUsersAsync(string? searchTerm = null, string? activityType = null, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 50);
 }
 
 public class FileService : IFileService
@@ -272,12 +274,35 @@ public class FileService : IFileService
             .Select(g => new { Category = g.Key, Count = g.Count() })
             .ToListAsync();
 
-        var recentActivities = await _context.FileActivities
+        var recentActivitiesQuery = await _context.FileActivities
             .Include(a => a.FileRecord)
             .Where(a => a.FileRecord.IsActive)
             .OrderByDescending(a => a.PerformedAt)
             .Take(10)
             .ToListAsync();
+
+        // Get user names for recent activities
+        var recentUserEmails = recentActivitiesQuery.Select(a => a.PerformedBy).Distinct().ToList();
+        var recentUsers = await _context.Users
+            .Where(u => recentUserEmails.Contains(u.Email))
+            .Select(u => new { u.Email, u.Name })
+            .ToListAsync();
+
+        var recentUserNameDict = recentUsers.ToDictionary(u => u.Email, u => u.Name);
+
+        var recentActivities = recentActivitiesQuery.Select(a => new FileActivityWithUser
+        {
+            Id = a.Id,
+            FileRecordId = a.FileRecordId,
+            ActivityType = a.ActivityType,
+            Description = a.Description,
+            PerformedBy = a.PerformedBy,
+            PerformedByName = recentUserNameDict.GetValueOrDefault(a.PerformedBy, a.PerformedBy),
+            PerformedAt = a.PerformedAt,
+            IpAddress = a.IpAddress,
+            UserAgent = a.UserAgent,
+            FileRecord = a.FileRecord
+        }).ToList();
 
         return new Dictionary<string, object>
         {
@@ -287,6 +312,78 @@ public class FileService : IFileService
             ["totalDownloads"] = totalDownloads,
             ["categoryStats"] = categoryStats,
             ["recentActivities"] = recentActivities
+        };
+    }
+
+    public async Task<ActivitiesResult> GetAllActivitiesWithUsersAsync(string? searchTerm = null, string? activityType = null, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 50)
+    {
+        var query = _context.FileActivities
+            .Include(a => a.FileRecord)
+            .Where(a => a.FileRecord.IsActive);
+
+        // Apply filters
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(a => 
+                a.FileRecord.OriginalFileName.Contains(searchTerm) ||
+                a.PerformedBy.Contains(searchTerm) ||
+                (a.Description != null && a.Description.Contains(searchTerm)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(activityType))
+        {
+            query = query.Where(a => a.ActivityType == activityType);
+        }
+
+        if (fromDate.HasValue)
+        {
+            query = query.Where(a => a.PerformedAt >= fromDate.Value);
+        }
+
+        if (toDate.HasValue)
+        {
+            var endDate = toDate.Value.AddDays(1);
+            query = query.Where(a => a.PerformedAt < endDate);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var activities = await query
+            .OrderByDescending(a => a.PerformedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        // Get all unique user emails from the activities
+        var userEmails = activities.Select(a => a.PerformedBy).Distinct().ToList();
+        
+        // Get user names from the database
+        var users = await _context.Users
+            .Where(u => userEmails.Contains(u.Email))
+            .Select(u => new { u.Email, u.Name })
+            .ToListAsync();
+
+        var userNameDict = users.ToDictionary(u => u.Email, u => u.Name);
+
+        // Map to FileActivityWithUser
+        var activitiesWithUsers = activities.Select(a => new FileActivityWithUser
+        {
+            Id = a.Id,
+            FileRecordId = a.FileRecordId,
+            ActivityType = a.ActivityType,
+            Description = a.Description,
+            PerformedBy = a.PerformedBy,
+            PerformedByName = userNameDict.GetValueOrDefault(a.PerformedBy, a.PerformedBy),
+            PerformedAt = a.PerformedAt,
+            IpAddress = a.IpAddress,
+            UserAgent = a.UserAgent,
+            FileRecord = a.FileRecord
+        }).ToList();
+
+        return new ActivitiesResult
+        {
+            Activities = activitiesWithUsers,
+            TotalCount = totalCount
         };
     }
 
