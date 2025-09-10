@@ -1,0 +1,237 @@
+@page "/logs"
+@using blazor_arsip.Services
+@using blazor_arsip.Models
+@using blazor_arsip.Components.Pages.Logs
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inherits LogsBase
+
+@rendermode InteractiveServer
+
+<PageTitle>System Logs - Arsip Digital</PageTitle>
+
+<div class="container-fluid logs-container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-history me-2"></i>System Logs
+                    </h1>
+                    <p class="text-muted">Complete log information and activity history</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow filter-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-filter me-2"></i>Search & Filter
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="searchTerm" class="form-label">Search Logs</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchTerm"
+                                       @bind="viewModel.SearchTerm"
+                                       @onkeypress="@(async (e) => { if (e.Key == "Enter") await HandleSearch(); })"
+                                       placeholder="Search Logs, Users, or Activities...">
+                                <button class="btn btn-outline-secondary" type="button" @onclick="HandleSearch">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="activityType" class="form-label">Activity Type</label>
+                            <select class="form-select" id="activityType" @bind="viewModel.SelectedActivityType">
+                                <option value="">All Types</option>
+                                <option value="Upload">Upload</option>
+                                <option value="Download">Download</option>
+                                <option value="Update">Update</option>
+                                <option value="Delete">Delete</option>
+                                <option value="View">View</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="fromDate" class="form-label">From Date</label>
+                            <input type="date" class="form-control" id="fromDate" @bind="viewModel.FromDate">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="toDate" class="form-label">To Date</label>
+                            <input type="date" class="form-control" id="toDate" @bind="viewModel.ToDate">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label invisible">Actions</label>
+                            <div>
+                                <button class="btn btn-primary btn-sm me-2" @onclick="HandleSearch">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                                <button class="btn btn-secondary btn-sm" @onclick="HandleClearFilters">
+                                    <i class="fas fa-times me-2"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (viewModel.IsLoading)
+    {
+        <div class="d-flex justify-content-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Results Summary -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted">
+                            Showing @((viewModel.CurrentPage - 1) * viewModel.PageSize + 1) to 
+                            @(Math.Min(viewModel.CurrentPage * viewModel.PageSize, viewModel.TotalActivities)) 
+                            of @viewModel.TotalActivities activities
+                        </span>
+                    </div>
+                    <div>
+                        <span class="badge bg-primary">Page @viewModel.CurrentPage of @viewModel.TotalPages</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow logs-table-container">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Activity Logs</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (viewModel.Activities.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover logs-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="width: 110px;">Date & Time</th>
+                                            <th scope="col" style="width: 90px;">Activity</th>
+                                            <th scope="col" style="width: 400px;">File</th>
+                                            <th scope="col" style="width: 140px;">User</th>
+                                            <th scope="col" style="width: 120px;">IP Address</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var activity in viewModel.Activities)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="date-info">
+                                                        <div class="date-primary">@activity.PerformedAt.ToString("MMM dd, yyyy")</div>
+                                                        <div class="date-secondary">@activity.PerformedAt.ToString("HH:mm:ss")</div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                                                        <div class="activity-icon">
+                                                            <i class="@GetActivityIcon(activity.ActivityType)"></i>
+                                                        </div>
+                                                        <span class="activity-badge @GetActivityBadgeClass(activity.ActivityType)" data-activity="@activity.ActivityType.ToLower()">
+                                                            @activity.ActivityType
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="file-info">
+                                                        <div class="file-name text-truncate" title="@activity.FileRecord.OriginalFileName">
+                                                            @activity.FileRecord.OriginalFileName
+                                                        </div>
+                                                        <div class="file-meta">
+                                                            <span class="badge bg-light text-dark">@activity.FileRecord.Category</span>
+                                                            <span class="file-size">@FormatFileSize(activity.FileRecord.FileSize)</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="user-info">
+                                                        <div class="user-name">
+                                                            @(!string.IsNullOrEmpty(activity.PerformedByName) ? activity.PerformedByName : activity.PerformedBy)
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(activity.IpAddress))
+                                                    {
+                                                        <div class="ip-address">@activity.IpAddress</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            @if (viewModel.TotalPages > 1)
+                            {
+                                <div class="pagination-container">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-outline-primary btn-sm" @onclick="HandlePreviousPage" disabled="@(viewModel.CurrentPage <= 1)">
+                                                <i class="fas fa-chevron-left me-1"></i><span class="d-none d-sm-inline">Previous</span>
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-sm" @onclick="HandleNextPage" disabled="@(viewModel.CurrentPage >= viewModel.TotalPages)">
+                                                <span class="d-none d-sm-inline">Next</span><i class="fas fa-chevron-right ms-1"></i>
+                                            </button>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <small class="text-muted d-none d-md-inline">
+                                                Page @viewModel.CurrentPage of @viewModel.TotalPages
+                                            </small>
+                                            <nav aria-label="Page navigation">
+                                                <ul class="pagination pagination-sm mb-0">
+                                                    @for (int i = Math.Max(1, viewModel.CurrentPage - 2); i <= Math.Min(viewModel.TotalPages, viewModel.CurrentPage + 2); i++)
+                                                    {
+                                                        <li class="page-item @(i == viewModel.CurrentPage ? "active" : "")">
+                                                            <button class="page-link" @onclick="@(async () => await HandleGoToPage(i))">@i</button>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-5">
+                                <i class="fas fa-history fa-4x text-muted mb-3"></i>
+                                <h5 class="text-muted">No activities found</h5>
+                                <p class="text-muted">Try adjusting your search filters or check back later.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<ToastContainer />
