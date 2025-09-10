@@ -731,7 +731,7 @@ th div[b-37d5y5dnrg] {
 }
 
 [data-theme="dark"] .search-box input[b-37d5y5dnrg]::placeholder {
-  color: #a0aec0 !important;
+  color: #888888 !important;
 }
 
 [data-theme="dark"] .search-box input:focus[b-37d5y5dnrg] {
@@ -767,7 +767,7 @@ th div[b-37d5y5dnrg] {
 }
 
 [data-theme="dark"] input.form-control[b-37d5y5dnrg]::placeholder {
-  color: #a0aec0;
+  color: #888888 !important;
 }
 
 [data-theme="dark"] input.form-control:focus[b-37d5y5dnrg] {

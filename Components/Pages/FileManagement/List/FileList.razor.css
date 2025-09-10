@@ -731,7 +731,7 @@ th div {
 }
 
 [data-theme="dark"] .search-box input::placeholder {
-  color: #a0aec0 !important;
+  color: #888888 !important;
 }
 
 [data-theme="dark"] .search-box input:focus {
@@ -767,7 +767,7 @@ th div {
 }
 
 [data-theme="dark"] input.form-control::placeholder {
-  color: #a0aec0;
+  color: #888888 !important;
 }
 
 [data-theme="dark"] input.form-control:focus {

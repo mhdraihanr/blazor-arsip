@@ -12,11 +12,16 @@
 <PageTitle>File List - Arsip Digital</PageTitle>
 
 <div class="container-fluid">
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h4 text-gray-800 mb-0">File List</h1>
-                <a href="/upload" class="btn btn-primary btn-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-list me-2"></i>File List
+                    </h1>
+                    <p class="text-muted">Browse, search, and manage your files</p>
+                </div>
+                <a href="/upload" class="btn btn-primary">
                     <i class="fas fa-upload me-2"></i>Upload New File
                 </a>
             </div>
@@ -26,11 +31,13 @@
     <!-- Search and Filter Section -->
     <div class="card shadow mb-3">
         <div class="card-header py-2">
-            <h6 class="m-0 font-weight-bold text-primary fs-6">Search & Filter</h6>
+            <h6 class="m-0 font-weight-bold text-primary fs-6
+            ">
+            <i class="fas fa-filter me-2"></i>Search & Filter</h6>
         </div>
         <div class="card-body py-3">
             <div class="row">
-                <div class="col-md-4 mb-2">
+                <div class="col-md-3 ">
                     <label for="searchTerm" class="form-label fs-7">Search Files</label>
                     <div class="input-group input-group-sm">
                         <input type="text" class="form-control" id="searchTerm" @bind="viewModel.SearchTerm" @onkeypress="viewModel.OnSearchKeyPressAsync" placeholder="Search by filename, description, or tags...">
@@ -57,11 +64,14 @@
                     <label for="toDate" class="form-label fs-7">To Date</label>
                     <input type="date" class="form-control form-control-sm" id="toDate" @bind="viewModel.ToDate" @bind:event="onchange">
                 </div>
-                <div class="col-md-2 mb-2">
-                    <label class="form-label fs-7">&nbsp;</label>
-                    <div class="d-grid">
-                        <button class="btn btn-secondary btn-sm" @onclick="viewModel.ClearFiltersAsync">
-                            <i class="fas fa-times me-1 fs-8"></i>Clear
+                <div class="col-md-3">
+                    <label class="form-label fs-7 invisible">Actions</label>
+                    <div class="d-flex">
+                        <button class="btn btn-primary btn-sm me-2" @onclick="viewModel.SearchFilesAsync">
+                            <i class="fas fa-search me-1"></i>Search
+                        </button>
+                        <button class="btn btn-secondary btn-sm me-3" @onclick="viewModel.ClearFiltersAsync">
+                            <i class="fas fa-times me-1"></i>Clear
                         </button>
                     </div>
                 </div>

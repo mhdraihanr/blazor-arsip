@@ -940,7 +940,7 @@ th div[b-37d5y5dnrg] {
 }
 
 [data-theme="dark"] .search-box input[b-37d5y5dnrg]::placeholder {
-  color: #a0aec0 !important;
+  color: #888888 !important;
 }
 
 [data-theme="dark"] .search-box input:focus[b-37d5y5dnrg] {
@@ -976,7 +976,7 @@ th div[b-37d5y5dnrg] {
 }
 
 [data-theme="dark"] input.form-control[b-37d5y5dnrg]::placeholder {
-  color: #a0aec0;
+  color: #888888 !important;
 }
 
 [data-theme="dark"] input.form-control:focus[b-37d5y5dnrg] {
@@ -1467,8 +1467,6 @@ th div[b-37d5y5dnrg] {
 }
 
 .filter-card .card-header[b-6ruy2ds42n] {
-  background: #2a2a2a;
-  color: white;
   border-radius: 10px 10px 0 0 !important;
   border: none;
 }
@@ -1564,33 +1562,99 @@ th div[b-37d5y5dnrg] {
 }
 
 [data-theme="dark"] .activity-badge[b-6ruy2ds42n] {
-  color: #1a202c;
+  color: #ffffff;
 }
 
-/* Badge colors for dark mode */
+/* Activity Type Badge Colors for Light Mode */
+.activity-badge[b-6ruy2ds42n] {
+  color: #ffffff;
+}
+
+/* Upload activity - Green */
+.activity-badge[data-activity="upload"][b-6ruy2ds42n],
+.activity-badge.bg-success[b-6ruy2ds42n] {
+  background-color: #28a745 !important;
+  color: #ffffff !important;
+}
+
+/* Download activity - Blue */
+.activity-badge[data-activity="download"][b-6ruy2ds42n],
+.activity-badge.bg-info[b-6ruy2ds42n] {
+  background-color: #17a2b8 !important;
+  color: #ffffff !important;
+}
+
+/* Update/Edit activity - Orange */
+.activity-badge[data-activity="update"][b-6ruy2ds42n],
+.activity-badge.bg-warning[b-6ruy2ds42n] {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+/* Delete activity - Red */
+.activity-badge[data-activity="delete"][b-6ruy2ds42n],
+.activity-badge.bg-danger[b-6ruy2ds42n] {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+}
+
+/* View activity - Purple */
+.activity-badge[data-activity="view"][b-6ruy2ds42n],
+.activity-badge.bg-primary[b-6ruy2ds42n] {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+}
+
+/* Other activities - Gray */
+.activity-badge.bg-secondary[b-6ruy2ds42n] {
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+}
+
+/* Dark Mode Badge Colors */
+[data-theme="dark"] .activity-badge[b-6ruy2ds42n] {
+  color: #ffffff !important;
+}
+
+/* Upload activity - Dark mode green */
+[data-theme="dark"] .activity-badge[data-activity="upload"][b-6ruy2ds42n],
 [data-theme="dark"] .activity-badge.bg-success[b-6ruy2ds42n] {
   background-color: #48bb78 !important;
+  color: #ffffff !important;
 }
 
+/* Download activity - Dark mode blue */
+[data-theme="dark"] .activity-badge[data-activity="download"][b-6ruy2ds42n],
 [data-theme="dark"] .activity-badge.bg-info[b-6ruy2ds42n] {
   background-color: #4299e1 !important;
+  color: #ffffff !important;
 }
 
+/* Update/Edit activity - Dark mode orange */
+[data-theme="dark"] .activity-badge[data-activity="update"][b-6ruy2ds42n],
 [data-theme="dark"] .activity-badge.bg-warning[b-6ruy2ds42n] {
   background-color: #ed8936 !important;
-  color: #1a202c !important;
+  color: #ffffff !important;
 }
 
+/* Delete activity - Dark mode red */
+[data-theme="dark"] .activity-badge[data-activity="delete"][b-6ruy2ds42n],
 [data-theme="dark"] .activity-badge.bg-danger[b-6ruy2ds42n] {
   background-color: #f56565 !important;
+  color: #ffffff !important;
 }
 
+/* View activity - Dark mode purple */
+[data-theme="dark"] .activity-badge[data-activity="view"][b-6ruy2ds42n],
 [data-theme="dark"] .activity-badge.bg-primary[b-6ruy2ds42n] {
-  background-color: #4299e1 !important;
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
 }
 
+/* Other activities - Dark mode gray */
 [data-theme="dark"] .activity-badge.bg-secondary[b-6ruy2ds42n] {
   background-color: #718096 !important;
+  color: #ffffff !important;
 }
 
 /* Dark mode activity icon styling */
