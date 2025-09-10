@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "blazor-arsip.csproj",
+      "use": "@vercel/build-dotnet"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ]
+}
