@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,9 @@ builder.Services.AddScoped<IToastService, ToastService>();
 // Tambah CurrentUserService untuk menyediakan data user saat ini
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// Add IP Address Service
+builder.Services.AddScoped<IIpAddressService, IpAddressService>();
 
 // Add User Settings Service
 builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
@@ -120,6 +124,15 @@ builder.Services.AddAntiforgery(options =>
     options.SuppressXFrameOptionsHeader = false;
 });
 
+// Configure forwarded headers for IP address detection
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Clear known networks and proxies to allow any
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -134,6 +147,9 @@ else
 }
 
 app.UseHttpsRedirection();
+
+// Use forwarded headers for IP detection
+app.UseForwardedHeaders();
 
 app.UseStaticFiles();
 

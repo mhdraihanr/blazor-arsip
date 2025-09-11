@@ -14,7 +14,8 @@ public interface IFileService
     Task<IEnumerable<FileRecord>> SearchFilesAsync(string searchTerm, string? category = null, DateTime? fromDate = null, DateTime? toDate = null);
     Task<FileRecord> UploadFileAsync(IFormFile file, string uploadedBy, string? description = null, string? tags = null, string category = "Documents");
     Task<FileRecord> UpdateFileAsync(FileRecord fileRecord);
-    Task<bool> DeleteFileAsync(int id);
+    Task<FileRecord> UpdateLastAccessedTimeAsync(FileRecord fileRecord);
+    Task<bool> DeleteFileAsync(int id, string? performedBy = null, string? ipAddress = null, string? userAgent = null);
     Task<string> GetFilePathAsync(int id);
     Task<bool> FileExistsAsync(int id);
     Task<IEnumerable<FileActivity>> GetFileActivitiesAsync(int fileId);
@@ -178,7 +179,16 @@ public class FileService : IFileService
         return fileRecord;
     }
 
-    public async Task<bool> DeleteFileAsync(int id)
+    public async Task<FileRecord> UpdateLastAccessedTimeAsync(FileRecord fileRecord)
+    {
+        fileRecord.LastAccessedAt = DateTime.UtcNow;
+        _context.FileRecords.Update(fileRecord);
+        await _context.SaveChangesAsync();
+        // Note: No activity logging for LastAccessedAt updates
+        return fileRecord;
+    }
+
+    public async Task<bool> DeleteFileAsync(int id, string? performedBy = null, string? ipAddress = null, string? userAgent = null)
     {
         var fileRecord = await GetFileByIdAsync(id);
         if (fileRecord == null) return false;
@@ -186,9 +196,13 @@ public class FileService : IFileService
         // Get file path before soft delete
         var filePath = await GetFilePathAsync(id);
         
+        // Use provided performedBy or default to "System"
+        var deletedBy = !string.IsNullOrEmpty(performedBy) ? performedBy : "System";
+        
         // Soft delete
         fileRecord.IsActive = false;
         fileRecord.ModifiedAt = DateTime.UtcNow;
+        fileRecord.ModifiedBy = deletedBy;
         
         await _context.SaveChangesAsync();
         
@@ -207,9 +221,12 @@ public class FileService : IFileService
             }
         }
         
-        await LogActivityAsync(id, "Delete", "System", "File deleted (including physical file)");
+        // Log delete activity with proper context
+        await LogActivityAsync(id, "Delete", deletedBy, 
+            $"File '{fileRecord.OriginalFileName}' deleted (including physical file)", 
+            ipAddress, userAgent);
 
-        _logger.LogInformation($"File deleted: {fileRecord.OriginalFileName} (ID: {id})");
+        _logger.LogInformation($"File deleted: {fileRecord.OriginalFileName} (ID: {id}) by {deletedBy}");
         return true;
     }
 
@@ -238,19 +255,31 @@ public class FileService : IFileService
 
     public async Task LogActivityAsync(int fileId, string activityType, string performedBy, string? description = null, string? ipAddress = null, string? userAgent = null)
     {
-        var activity = new FileActivity
+        try
         {
-            FileRecordId = fileId,
-            ActivityType = activityType,
-            Description = description,
-            PerformedBy = performedBy,
-            PerformedAt = DateTime.UtcNow,
-            IpAddress = ipAddress,
-            UserAgent = userAgent
-        };
+            _logger.LogInformation($"Logging activity: FileId={fileId}, Type={activityType}, User={performedBy}, IP={ipAddress ?? "NULL"}, UserAgent={userAgent ?? "NULL"}");
+            
+            var activity = new FileActivity
+            {
+                FileRecordId = fileId,
+                ActivityType = activityType,
+                Description = description,
+                PerformedBy = performedBy,
+                PerformedAt = DateTime.UtcNow,
+                IpAddress = !string.IsNullOrEmpty(ipAddress) && ipAddress != "Unknown" ? ipAddress : null,
+                UserAgent = !string.IsNullOrEmpty(userAgent) && userAgent != "Unknown" ? userAgent : null
+            };
 
-        _context.FileActivities.Add(activity);
-        await _context.SaveChangesAsync();
+            _context.FileActivities.Add(activity);
+            await _context.SaveChangesAsync();
+            
+            _logger.LogInformation($"Activity logged successfully with ID: {activity.Id}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error logging activity for FileId={fileId}, Type={activityType}");
+            throw;
+        }
     }
 
     public async Task<IEnumerable<FileCategory>> GetCategoriesAsync()
@@ -276,10 +305,10 @@ public class FileService : IFileService
 
         var recentActivitiesQuery = await _context.FileActivities
             .Include(a => a.FileRecord)
-            .Where(a => a.FileRecord.IsActive)
             .OrderByDescending(a => a.PerformedAt)
             .Take(10)
             .ToListAsync();
+            // Note: Show all activities including deleted files for dashboard
 
         // Get user names for recent activities
         var recentUserEmails = recentActivitiesQuery.Select(a => a.PerformedBy).Distinct().ToList();
@@ -317,9 +346,10 @@ public class FileService : IFileService
 
     public async Task<ActivitiesResult> GetAllActivitiesWithUsersAsync(string? searchTerm = null, string? activityType = null, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 50)
     {
-        var query = _context.FileActivities
-            .Include(a => a.FileRecord)
-            .Where(a => a.FileRecord.IsActive);
+        // Start with base query including all activities (not filtering by IsActive)
+        IQueryable<FileActivity> query = _context.FileActivities
+            .Include(a => a.FileRecord);
+            // Note: Removed IsActive filter to show delete logs
 
         // Apply filters
         if (!string.IsNullOrWhiteSpace(searchTerm))
