@@ -8,6 +8,24 @@
   font-size: 1.1rem;
 }
 
+.sidebar-close-btn[b-077a58kz1y] {
+  color: #ffffff;
+  opacity: 0.8;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar-close-btn:hover[b-077a58kz1y] {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.sidebar-close-btn:focus[b-077a58kz1y] {
+  outline: none;
+  box-shadow: none;
+}
+
 .bi[b-077a58kz1y] {
   display: inline-block;
   position: relative;

@@ -1,8 +1,13 @@
+@inject IJSRuntime JSRuntime
+
 <div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
         <a class="navbar-brand" href="">
             <i class="fas fa-archive me-2"></i> PT. LEN INDUSTRI
         </a>
+        <button class="btn btn-link text-white d-md-none sidebar-close-btn" @onclick="CloseSidebar" type="button" aria-label="Close sidebar">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
 </div>
 
@@ -41,4 +46,12 @@
         </div>
     </nav>
 </div>
+
+@code {
+    private async Task CloseSidebar()
+    {
+        // Call parent's toggle method via JavaScript
+        await JSRuntime.InvokeVoidAsync("eval", "document.querySelector('.burger-btn').click()");
+    }
+}
 

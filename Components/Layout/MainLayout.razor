@@ -1,6 +1,12 @@
+@using Microsoft.JSInterop
 @inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
 
-<div class="page">
+<div class="page @(isSidebarCollapsed ? "sidebar-collapsed" : "")">
+    @if (!isSidebarCollapsed)
+    {
+        <div class="sidebar-overlay d-md-none" @onclick="HandleToggleClick"></div>
+    }
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -8,8 +14,10 @@
     <main>
         <div class="top-row px-4">
             <div class="d-flex justify-content-between align-items-center w-100">
-                <div>
-                    <!-- Left side content if needed -->
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link p-0 me-3 burger-btn" @onclick="HandleToggleClick" type="button" aria-label="Toggle sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
                 <div class="d-flex align-items-center">
                     <button class="btn btn-link text-decoration-none p-0 dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
@@ -35,3 +43,57 @@
 </div>
 
 <blazor_arsip.Components.Shared.ToastContainer />
+
+@code {
+    private bool isSidebarCollapsed = false; // Default: open for desktop
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine($"[DEBUG] MainLayout initialized. Sidebar collapsed: {isSidebarCollapsed}");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine($"[DEBUG] OnAfterRenderAsync called. FirstRender: {firstRender}");
+        if (firstRender)
+        {
+            try
+            {
+                // Check screen size
+                var width = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
+                var isMobile = width <= 640;
+                Console.WriteLine($"[DEBUG] Screen width: {width}, IsMobile: {isMobile}");
+                
+                if (isMobile)
+                {
+                    isSidebarCollapsed = true;
+                    Console.WriteLine($"[DEBUG] Mobile - Sidebar set to collapsed");
+                    StateHasChanged();
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG] Desktop - Sidebar remains open");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] OnAfterRenderAsync: {ex.Message}");
+            }
+        }
+    }
+
+    private void HandleToggleClick()
+    {
+        try
+        {
+            Console.WriteLine($"[DEBUG] HandleToggleClick called. Current state - Collapsed: {isSidebarCollapsed}");
+            isSidebarCollapsed = !isSidebarCollapsed;
+            Console.WriteLine($"[DEBUG] After toggle - Collapsed: {isSidebarCollapsed}");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] HandleToggleClick: {ex.Message}");
+        }
+    }
+}
