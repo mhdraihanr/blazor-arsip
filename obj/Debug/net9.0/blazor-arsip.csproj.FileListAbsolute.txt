@@ -297,5 +297,5 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\Components\Pages\Logs\Logs.r
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\zkk2wadahm-jsq5ks7hs9.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\z6t8xdqzsc-8uk4vl7x1t.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\072u7tw7bk-h8ua9vuotz.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-cn8hn0yxg3.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-0149owp8vd.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-lj8lcfs0pl.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-ybhtv9uzb8.gz

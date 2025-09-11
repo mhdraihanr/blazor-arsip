@@ -119,7 +119,7 @@ main {
   .page:not(.sidebar-collapsed) .sidebar {
     transform: translateX(0);
   }
-  
+
   /* Mobile specific top-row styling - Higher z-index than sidebar */
   .top-row {
     position: fixed;
@@ -127,23 +127,23 @@ main {
     left: 0;
     right: 0;
     height: 56px;
-    z-index: 1060;
+    z-index: 1;
     background: var(--bg-secondary, #f8f9fa);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0.5rem 1rem !important;
   }
-  
+
   /* Dark mode for mobile header */
   [data-theme="dark"] .top-row {
     background: var(--bg-secondary, #2e353a);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
-  
+
   /* Add padding to content to account for fixed header */
   .content {
     padding-top: 56px;
   }
-  
+
   /* Ensure main takes full width on mobile */
   main {
     width: 100%;
@@ -190,7 +190,7 @@ main {
     position: relative;
     z-index: 1070;
   }
-  
+
   /* When sidebar is open, change burger icon to X */
   .page:not(.sidebar-collapsed) .burger-btn i::before {
     content: "\f00d";
