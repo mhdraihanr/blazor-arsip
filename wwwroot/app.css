@@ -564,12 +564,22 @@ h1:focus {
   transition: all 0.3s ease;
 }
 
+/* CSS Variables */
+:root {
+  --bg-secondary: #f8f9fa;
+  --text-primary: #333333;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Dark Mode Styles */
 [data-theme="dark"] {
   --bs-body-bg: #121212;
   --bs-body-color: #e0e0e0;
   --bs-card-bg: #1e1e1e;
   --bs-border-color: #333333;
+  --bg-secondary: #2e353a;
+  --text-primary: #e0e0e0;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Apply dark mode to html and body immediately */

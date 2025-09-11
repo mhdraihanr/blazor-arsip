@@ -60,7 +60,7 @@ main[b-8ip4icgmi4] {
     flex-direction: row;
   }
 
-  /* Sidebar with normal layout */
+  /* Desktop: Sidebar normal state */
   .sidebar[b-8ip4icgmi4] {
     flex: 0 0 250px;
     width: 250px;
@@ -69,16 +69,15 @@ main[b-8ip4icgmi4] {
     top: 0;
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
     overflow: hidden;
-    opacity: 1;
-    visibility: visible;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
   }
 
-  /* When sidebar is collapsed */
+  /* Desktop: When sidebar is collapsed - slide to left */
   .page.sidebar-collapsed .sidebar[b-8ip4icgmi4] {
     flex-basis: 0;
     width: 0;
-    overflow: hidden;
+    transform: translateX(-100%);
   }
 
   .top-row[b-8ip4icgmi4] {
@@ -100,7 +99,7 @@ main[b-8ip4icgmi4] {
   }
 }
 
-/* Mobile: show/hide sidebar based on class */
+/* Mobile: sidebar overlay behavior */
 @media (max-width: 640.98px) {
   .sidebar[b-8ip4icgmi4] {
     position: fixed;
@@ -111,24 +110,60 @@ main[b-8ip4icgmi4] {
     z-index: 1045;
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
     overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Show overlay when sidebar is open on mobile */
-  .page:not(.sidebar-collapsed)[b-8ip4icgmi4]::before {
-    content: "";
+  /* Mobile: Default collapsed */
+  .page.sidebar-collapsed .sidebar[b-8ip4icgmi4] {
+    transform: translateX(-100%);
+  }
+
+  /* Mobile: When sidebar is open */
+  .page:not(.sidebar-collapsed) .sidebar[b-8ip4icgmi4] {
+    transform: translateX(0);
+  }
+  
+  /* Mobile specific top-row styling - Higher z-index than sidebar */
+  .top-row[b-8ip4icgmi4] {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1044;
+    height: 56px;
+    z-index: 1060;
+    background: var(--bg-secondary, #f8f9fa);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 1rem !important;
   }
+  
+  /* Dark mode for mobile header */
+  [data-theme="dark"] .top-row[b-8ip4icgmi4] {
+    background: var(--bg-secondary, #2e353a);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Add padding to content to account for fixed header */
+  .content[b-8ip4icgmi4] {
+    padding-top: 56px;
+  }
+  
+  /* Ensure main takes full width on mobile */
+  main[b-8ip4icgmi4] {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+}
 
-  /* When sidebar is collapsed on mobile, hide it */
-  .page.sidebar-collapsed .sidebar[b-8ip4icgmi4] {
-    transform: translateX(-100%);
-  }
+/* Sidebar overlay for mobile */
+.sidebar-overlay[b-8ip4icgmi4] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1044;
+  transition: opacity 0.3s ease;
 }
 
 /* Burger button styling */
@@ -149,10 +184,41 @@ main[b-8ip4icgmi4] {
   box-shadow: none;
 }
 
+/* Mobile specific burger button styling */
+@media (max-width: 640.98px) {
+  .burger-btn[b-8ip4icgmi4] {
+    font-size: 1.5rem;
+    padding: 0.5rem !important;
+    margin-right: 0.5rem !important;
+    position: relative;
+    z-index: 1070;
+  }
+  
+  /* When sidebar is open, change burger icon to X */
+  .page:not(.sidebar-collapsed) .burger-btn i[b-8ip4icgmi4]::before {
+    content: "\f00d";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+  }
+}
+
 /* Rotate burger icon when sidebar is collapsed */
 .page.sidebar-collapsed .burger-btn i[b-8ip4icgmi4] {
   transform: rotate(90deg);
   transition: transform 0.3s ease;
+}
+
+/* Ensure smooth transitions work with dark mode */
+[data-theme="dark"] .sidebar[b-8ip4icgmi4] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .burger-btn[b-8ip4icgmi4] {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .burger-btn:hover[b-8ip4icgmi4] {
+  color: #ffffff;
 }
 
 #blazor-error-ui[b-8ip4icgmi4] {
@@ -184,6 +250,24 @@ main[b-8ip4icgmi4] {
 
 .navbar-brand[b-077a58kz1y] {
   font-size: 1.1rem;
+}
+
+.sidebar-close-btn[b-077a58kz1y] {
+  color: #ffffff;
+  opacity: 0.8;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar-close-btn:hover[b-077a58kz1y] {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.sidebar-close-btn:focus[b-077a58kz1y] {
+  outline: none;
+  box-shadow: none;
 }
 
 .bi[b-077a58kz1y] {

@@ -160,7 +160,6 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\Components\Shared\UserMenu.r
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\bundle\blazor-arsip.styles.css
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\projectbundle\blazor-arsip.bundle.scp.css
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\unlu0xluo6-eu7w3d5g1a.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\072u7tw7bk-mk0b09div8.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\fn6ew3u11c-t1cqhe9u97.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\nfndtx4usk-c2jlpeoesf.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\uly581vttj-sejl45xvog.gz
@@ -297,5 +296,6 @@ D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\yfc7ypekbg-mlv21k5csn.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\scopedcss\Components\Pages\Logs\Logs.razor.rz.scp.css
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\zkk2wadahm-jsq5ks7hs9.gz
 D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\z6t8xdqzsc-8uk4vl7x1t.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-int6q9q01h.gz
-D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-cuilf5ps9a.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\072u7tw7bk-h8ua9vuotz.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\1rfz21l1ub-cn8hn0yxg3.gz
+D:\a-csharp\blazor-arsip\obj\Debug\net9.0\compressed\bmgs63hsby-0149owp8vd.gz
