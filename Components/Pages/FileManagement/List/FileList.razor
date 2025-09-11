@@ -152,7 +152,7 @@
                                             <button class="btn btn-sm btn-outline-secondary" @onclick:stopPropagation="true" @onclick="() => viewModel.EditFile(file.Id)" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" @onclick:stopPropagation="true" @onclick="() => viewModel.DeleteFileAsync(file.Id, confirmationDialog)" title="Delete">
+                                            <button class="btn btn-sm btn-outline-danger" @onclick:stopPropagation="true" @onclick="() => DeleteFileWithContext(file.Id)" title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -219,7 +219,7 @@
                                         <button class="btn btn-sm btn-outline-secondary" @onclick:stopPropagation="true" @onclick="() => viewModel.EditFile(context.Id)" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger" @onclick:stopPropagation="true" @onclick="() => viewModel.DeleteFileAsync(context.Id, confirmationDialog)" title="Delete">
+                                        <button class="btn btn-sm btn-outline-danger" @onclick:stopPropagation="true" @onclick="() => DeleteFileWithContext(context.Id)" title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>

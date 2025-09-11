@@ -54,6 +54,7 @@
   }
 
   .sidebar-close-btn {
+    border: transparent;
     font-size: 1.25rem;
     padding: 0.375rem;
     margin-left: 0.5rem;

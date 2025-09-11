@@ -13,12 +13,14 @@ public class FileController : ControllerBase
     private readonly IFileService _fileService;
     private readonly ILogger<FileController> _logger;
     private readonly IWebHostEnvironment _environment;
+    private readonly IIpAddressService _ipAddressService;
 
-    public FileController(IFileService fileService, ILogger<FileController> logger, IWebHostEnvironment environment)
+    public FileController(IFileService fileService, ILogger<FileController> logger, IWebHostEnvironment environment, IIpAddressService ipAddressService)
     {
         _fileService = fileService;
         _logger = logger;
         _environment = environment;
+        _ipAddressService = ipAddressService;
     }
 
     [HttpGet("download/{id:int}")]
@@ -52,15 +54,15 @@ public class FileController : ControllerBase
             }
 
             // Log download activity
-            var userAgent = Request.Headers.UserAgent.ToString();
-            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var userAgent = _ipAddressService.GetUserAgent();
+            var ipAddress = _ipAddressService.GetClientIpAddress();
             var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value ?? "Anonymous";
             await _fileService.LogActivityAsync(id, "Download", userEmail, 
                 $"File '{fileRecord.OriginalFileName}' downloaded", ipAddress, userAgent);
 
             // Update last accessed time
             fileRecord.LastAccessedAt = DateTime.UtcNow;
-            await _fileService.UpdateFileAsync(fileRecord);
+            await _fileService.UpdateLastAccessedTimeAsync(fileRecord);
 
             var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
             var contentDisposition = new ContentDisposition
@@ -168,13 +170,20 @@ public class FileController : ControllerBase
     {
         try
         {
-            var result = await _fileService.DeleteFileAsync(id);
+            // Get user context and IP information using the service
+            var userAgent = _ipAddressService.GetUserAgent();
+            var ipAddress = _ipAddressService.GetClientIpAddress();
+            var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value ?? "Anonymous";
+            
+            _logger.LogInformation($"Delete request for file ID {id} from IP: {ipAddress}, User: {userEmail}");
+            
+            var result = await _fileService.DeleteFileAsync(id, userEmail, ipAddress, userAgent);
             if (!result)
             {
                 return NotFound("File not found");
             }
 
-            _logger.LogInformation($"File deleted via API: ID {id}");
+            _logger.LogInformation($"File deleted via API: ID {id} by {userEmail} from {ipAddress}");
             return Ok(new { message = "File deleted successfully" });
         }
         catch (Exception ex)
