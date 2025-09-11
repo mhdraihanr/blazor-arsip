@@ -122,7 +122,7 @@ main[b-8ip4icgmi4] {
   .page:not(.sidebar-collapsed) .sidebar[b-8ip4icgmi4] {
     transform: translateX(0);
   }
-  
+
   /* Mobile specific top-row styling - Higher z-index than sidebar */
   .top-row[b-8ip4icgmi4] {
     position: fixed;
@@ -130,23 +130,23 @@ main[b-8ip4icgmi4] {
     left: 0;
     right: 0;
     height: 56px;
-    z-index: 1060;
+    z-index: 1;
     background: var(--bg-secondary, #f8f9fa);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0.5rem 1rem !important;
   }
-  
+
   /* Dark mode for mobile header */
   [data-theme="dark"] .top-row[b-8ip4icgmi4] {
     background: var(--bg-secondary, #2e353a);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
-  
+
   /* Add padding to content to account for fixed header */
   .content[b-8ip4icgmi4] {
     padding-top: 56px;
   }
-  
+
   /* Ensure main takes full width on mobile */
   main[b-8ip4icgmi4] {
     width: 100%;
@@ -193,7 +193,7 @@ main[b-8ip4icgmi4] {
     position: relative;
     z-index: 1070;
   }
-  
+
   /* When sidebar is open, change burger icon to X */
   .page:not(.sidebar-collapsed) .burger-btn i[b-8ip4icgmi4]::before {
     content: "\f00d";
@@ -242,7 +242,6 @@ main[b-8ip4icgmi4] {
   top: 0.5rem;
 }
 /* _content/blazor-arsip/Components/Layout/NavMenu.razor.rz.scp.css */
-
 .top-row[b-077a58kz1y] {
   min-height: 3.5rem;
   background-color: rgba(0, 0, 0, 0.4);
@@ -250,6 +249,10 @@ main[b-8ip4icgmi4] {
 
 .navbar-brand[b-077a58kz1y] {
   font-size: 1.1rem;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-close-btn[b-077a58kz1y] {
@@ -258,6 +261,8 @@ main[b-8ip4icgmi4] {
   font-size: 1.5rem;
   padding: 0.5rem;
   transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .sidebar-close-btn:hover[b-077a58kz1y] {
@@ -268,6 +273,36 @@ main[b-8ip4icgmi4] {
 .sidebar-close-btn:focus[b-077a58kz1y] {
   outline: none;
   box-shadow: none;
+}
+
+/* Mobile specific adjustments for proper alignment */
+@media (max-width: 640.98px) {
+  .top-row[b-077a58kz1y] {
+    padding: 0 !important;
+  }
+
+  .top-row .container-fluid[b-077a58kz1y] {
+    padding: 0 1rem;
+    min-height: 3.5rem;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100%;
+  }
+
+  .navbar-brand[b-077a58kz1y] {
+    font-size: 1rem;
+    margin-right: 1rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sidebar-close-btn[b-077a58kz1y] {
+    font-size: 1.25rem;
+    padding: 0.375rem;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+  }
 }
 
 .bi[b-077a58kz1y] {
