@@ -15,9 +15,11 @@ public class User
     [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
     
-    [Required]
     [MaxLength(255)]
-    public string PasswordHash { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty; // Optional for Auth0 users
+    
+    [MaxLength(255)]
+    public string? Auth0Id { get; set; } // Auth0 user identifier
     
     public string? PhotoUrl { get; set; }
     

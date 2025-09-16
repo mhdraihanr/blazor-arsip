@@ -29,7 +29,15 @@ public class AuthenticationService : IAuthenticationService
         if (user == null)
             return null;
 
-        if (!ValidatePassword(password, user.PasswordHash))
+        // Check if user is Auth0 user (has Auth0Id but no local password)
+        if (!string.IsNullOrEmpty(user.Auth0Id) && string.IsNullOrEmpty(user.PasswordHash))
+        {
+            // Auth0 users cannot login with local credentials
+            return null;
+        }
+
+        // For local users, validate password
+        if (string.IsNullOrEmpty(user.PasswordHash) || !ValidatePassword(password, user.PasswordHash))
             return null;
 
         // Update last login

@@ -7,11 +7,10 @@
 @inject NavigationManager Navigation
 @inject ILogger<UserMenu> Logger
 
-<div class="user-menu dropdown" @onmouseleave="() => IsOpen = false">
-    <button class="btn btn-light d-flex align-items-center user-button" 
-            @onclick="ToggleDropdown" 
-            aria-haspopup="true" 
-            aria-expanded="@IsOpen.ToString().ToLower()"
+<div class="user-menu dropdown">
+    <button class="btn btn-light d-flex align-items-center user-button"
+            aria-haspopup="true"
+            aria-expanded="false"
             data-bs-toggle="dropdown">
         <div class="avatar me-2">
             @if (!string.IsNullOrWhiteSpace(User?.PhotoUrl))
@@ -30,9 +29,8 @@
         <i class="fas fa-chevron-down ms-2 text-muted"></i>
     </button>
 
-    <ul class="dropdown-menu dropdown-menu-end @((IsOpen ? "show" : ""))" 
-        aria-labelledby="dropdownMenuButton">
-        <li><a class="dropdown-item" href="settings" @onclick="() => IsOpen = false"><i class="fas fa-user me-2"></i>Profil Pengguna</a></li>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+        <li><a class="dropdown-item" href="settings"><i class="fas fa-user me-2"></i>Profil Pengguna</a></li>
         <li><hr class="dropdown-divider" /></li>
         <li>
             <form method="post" action="/Account/Logout">
@@ -46,7 +44,6 @@
 
 @code {
     private UserInfo? User;
-    private bool IsOpen;
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,11 +97,7 @@
         }
     }
 
-    private void ToggleDropdown()
-    {
-        IsOpen = !IsOpen;
-        StateHasChanged(); // Force UI update
-    }
+    // Rely on Bootstrap's dropdown JS for open/close behavior.
 
     private string GetInitials(string? name)
     {
