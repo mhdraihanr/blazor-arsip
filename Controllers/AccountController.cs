@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using blazor_arsip.Services;
 using blazor_arsip.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace blazor_arsip.Controllers
 {
@@ -59,11 +60,11 @@ namespace blazor_arsip.Controllers
                     new Claim("PhotoUrl", user.PhotoUrl ?? string.Empty)
                 };
 
-                var claimsIdentity = new ClaimsIdentity(claims, "CustomAuth");
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
                 // Sign in with cookie
-                await HttpContext.SignInAsync("CustomAuth", claimsPrincipal, new AuthenticationProperties
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, new AuthenticationProperties
                 {
                     IsPersistent = true,
                     ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
@@ -97,13 +98,30 @@ namespace blazor_arsip.Controllers
                 var userName = User.Identity?.Name ?? "Unknown";
                 
                 // Clear the authentication cookie
-                await HttpContext.SignOutAsync("CustomAuth");
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 
                 // Clear session data
                 HttpContext.Session.Clear();
                 
-                // Explicitly expire the cookie
+                // Explicitly expire all authentication cookies
                 Response.Cookies.Delete("BlazorArsipAuth", new CookieOptions
+                {
+                    Path = "/",
+                    HttpOnly = true,
+                    Secure = Request.IsHttps,
+                    SameSite = SameSiteMode.Strict
+                });
+                
+                // Also clear any Auth0 related cookies
+                Response.Cookies.Delete(".AspNetCore.OpenIdConnect.Nonce.Auth0", new CookieOptions
+                {
+                    Path = "/",
+                    HttpOnly = true,
+                    Secure = Request.IsHttps,
+                    SameSite = SameSiteMode.Strict
+                });
+                
+                Response.Cookies.Delete(".AspNetCore.Correlation.Auth0", new CookieOptions
                 {
                     Path = "/",
                     HttpOnly = true,

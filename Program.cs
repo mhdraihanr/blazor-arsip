@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +41,9 @@ builder.Services.AddScoped<IToastService, ToastService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
+// Add Auth0 User Sync Service
+builder.Services.AddScoped<IAuth0UserSyncService, Auth0UserSyncService>();
+
 // Add IP Address Service
 builder.Services.AddScoped<IIpAddressService, IpAddressService>();
 
@@ -57,31 +64,108 @@ builder.Services.AddSession(options =>
     options.Cookie.Name = "BlazorArsipSession";
 });
 
-// Authentication & Authorization (Blazor Server)
-builder.Services.AddAuthentication("CustomAuth")
-    .AddCookie("CustomAuth", options =>
+// Authentication & Authorization (Cookie-based with Auth0 Google integration)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.Cookie.Name = "BlazorArsipAuth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.LoginPath = "/login";
+    options.LogoutPath = "/logout";
+    options.AccessDeniedPath = "/login";
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.SlidingExpiration = true;
+    // Disable automatic redirects for API calls
+    options.Events.OnRedirectToLogin = context =>
     {
-        options.Cookie.Name = "BlazorArsipAuth";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-        options.Cookie.SameSite = SameSiteMode.Strict;
-        options.LoginPath = "/login";
-        options.LogoutPath = "/logout";
-        options.AccessDeniedPath = "/login";
-        options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        options.SlidingExpiration = true;
-        // Disable automatic redirects for API calls
-        options.Events.OnRedirectToLogin = context =>
+        if (context.Request.Path.StartsWithSegments("/api"))
         {
-            if (context.Request.Path.StartsWithSegments("/api"))
-            {
-                context.Response.StatusCode = 401;
-                return Task.CompletedTask;
-            }
-            context.Response.Redirect(context.RedirectUri);
+            context.Response.StatusCode = 401;
             return Task.CompletedTask;
-        };
-    });
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+})
+.AddOpenIdConnect("Auth0", options =>
+{
+    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}";
+    options.ClientId = builder.Configuration["Auth0:ClientId"];
+    options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
+    options.ResponseType = OpenIdConnectResponseType.Code;
+    options.Scope.Clear();
+    options.Scope.Add("openid");
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+    options.CallbackPath = "/signin-auth0";
+    options.ClaimsIssuer = "Auth0";
+    options.SaveTokens = false;
+    options.GetClaimsFromUserInfoEndpoint = true;
+    options.UsePkce = true;
+    options.SkipUnrecognizedRequests = true;
+    
+    // Fix state parameter and callback issues
+    options.Events = new OpenIdConnectEvents
+    {
+        OnRedirectToIdentityProvider = context =>
+        {
+            // Add connection parameter for Google login
+            context.ProtocolMessage.SetParameter("connection", "google-oauth2");
+            
+            // Ensure state parameter is properly set
+            if (string.IsNullOrEmpty(context.ProtocolMessage.State))
+            {
+                context.ProtocolMessage.State = context.Options.StateDataFormat.Protect(context.Properties);
+            }
+            
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            
+            // Log as information rather than error for timing issues
+            logger.LogInformation("Auth0 middleware authentication event: {Error}", context.Exception?.Message);
+            
+            // Don't redirect automatically - let callback handle all redirects
+            // This prevents double error handling
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            // Token validation successful
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Auth0 token validated successfully");
+            return Task.CompletedTask;
+        },
+        OnRemoteFailure = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Auth0 remote failure event: {Error}", context.Failure?.Message);
+            
+            // Check if user cancelled the authentication
+            if (context.Failure?.Message?.Contains("access_denied") == true)
+            {
+                logger.LogInformation("User cancelled authentication");
+                context.Response.Redirect("/login");
+            }
+            else
+            {
+                // Let the callback handle other errors
+                logger.LogInformation("Allowing callback to handle the error");
+                context.Response.Redirect("/api/auth/auth0-callback");
+            }
+            context.HandleResponse();
+            return Task.CompletedTask;
+        }
+    };
+});
 
 builder.Services.AddAuthorizationCore();
 // Use standard server-side authentication

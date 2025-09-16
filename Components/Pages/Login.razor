@@ -13,34 +13,112 @@
 @rendermode InteractiveServer
 
 @inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
 
-<h3>Login</h3>
+<div class="text-center mb-4">
+    <h3 class="fw-bold text-primary">Masuk</h3>
+    <p class="text-muted">Masuk ke Arsip Digital</p> 
+</div>
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
     <div class="alert alert-danger">@ErrorMessage</div>
 }
 
-<form method="post" action="@($"/Account/Login?returnUrl={Uri.EscapeDataString(GetRedirectUrl())}")" autocomplete="on">
-    <div class="form-group">
-        <label for="email">Email</label>
+<!-- Google Login Option -->
+<div class="mb-4">
+    <a href="@($"/api/auth/login-google?returnUrl={Uri.EscapeDataString(GetRedirectUrl())}")"
+       class="btn btn-danger btn-lg w-100 mb-3">
+        <i class="fab fa-google me-2"></i>
+        Masuk dengan Google
+    </a>
+</div>
+
+<!-- Divider -->
+<div class="divider mb-4">
+    <span class="divider-text">ATAU</span>
+</div>
+
+<!-- Local Login Form -->
+<form method="post" action="@($"/Account/Login?returnUrl={Uri.EscapeDataString(GetRedirectUrl())}")"
+      autocomplete="on">
+    <div class="form-group mb-3">
+        <label for="email" class="form-label">Email</label>
         <input id="email" name="Email" type="email" class="form-control" required />
     </div>
 
-    <div class="form-group">
-        <label for="password">Password</label>
+    <div class="form-group mb-3">
+        <label for="password" class="form-label">Password</label>
         <input id="password" name="Password" type="password" class="form-control" required />
     </div>
 
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary w-100">
+        Masuk
+    </button>
 </form>
 
-<div class="text-center mt-3">
+<div class="text-center mt-4">
     <p class="text-muted mb-0">
-        Don't have an account? 
-        <a href="/register" class="text-primary text-decoration-none fw-semibold">Create Account</a>
+        Belum punya akun? 
+        <a href="/register" class="text-primary text-decoration-none fw-semibold">Buat Akun</a>
     </p>
 </div>
+
+<style>
+/* Divider styling that works with LoginLayout */
+.divider {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.divider-text {
+    background: white;
+    padding: 0 1rem;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Google button styling */
+.btn-lg {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* Dark mode support for divider */
+[data-theme="dark"] .divider-text {
+    background: #1e1e1e !important;
+    color: #a0aec0 !important;
+}
+
+[data-theme="dark"] .divider::before {
+    background: #444444 !important;
+}
+
+/* Dark mode support for text elements */
+[data-theme="dark"] .text-primary {
+    color: #8ba3f7 !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: #b0b0b0 !important;
+}
+</style>
 
 @code {
     [SupplyParameterFromQuery]
@@ -49,7 +127,55 @@
     [SupplyParameterFromQuery]
     private string? error { get; set; }
 
-    private string? ErrorMessage => error == "1" ? "Email atau password salah" : null;
+    private string? ErrorMessage => GetErrorMessage();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Check if user is already authenticated
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            if (authState.User.Identity?.IsAuthenticated == true)
+            {
+                // User is already authenticated, redirect to dashboard or return URL
+                var redirectUrl = GetRedirectUrl();
+                await Task.Delay(50); // Small delay to ensure proper redirect
+                Navigation.NavigateTo(redirectUrl, true);
+                return;
+            }
+            
+            // If there's an error parameter but user might be authenticated in the background,
+            // wait a moment and check again
+            if (!string.IsNullOrEmpty(error))
+            {
+                await Task.Delay(500); // Wait for potential background authentication
+                var recheckAuthState = await AuthStateProvider.GetAuthenticationStateAsync();
+                if (recheckAuthState.User.Identity?.IsAuthenticated == true)
+                {
+                    var redirectUrl = GetRedirectUrl();
+                    Navigation.NavigateTo(redirectUrl, true);
+                    return;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't prevent page from loading
+            Console.WriteLine($"Login page initialization error: {ex.Message}");
+        }
+    }
+
+    private string? GetErrorMessage()
+    {
+        // Only show error messages that are genuinely user-actionable
+        return error switch
+        {
+            "1" => "Email atau password salah",
+            "auth0_error" => "Terjadi kesalahan saat login. Silakan coba lagi.",
+            // Removed "auth0_failed" as it often appears even when login succeeds
+            _ => null
+        };
+    }
 
     private string GetRedirectUrl()
     {
