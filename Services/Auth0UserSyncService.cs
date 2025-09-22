@@ -29,11 +29,18 @@ public class Auth0UserSyncService : IAuth0UserSyncService
         try
         {
             var auth0Id = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var auth0IdFromCustomClaim = claimsPrincipal.FindFirst("Auth0Id")?.Value;
             var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
             var name = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value ?? 
                       claimsPrincipal.FindFirst("name")?.Value ?? 
                       email?.Split('@')[0] ?? "Unknown User";
             var picture = claimsPrincipal.FindFirst("picture")?.Value;
+
+            if (!string.IsNullOrEmpty(auth0IdFromCustomClaim) &&
+                (string.IsNullOrEmpty(auth0Id) || !auth0Id.Contains('|')))
+            {
+                auth0Id = auth0IdFromCustomClaim;
+            }
 
             if (string.IsNullOrEmpty(auth0Id) || string.IsNullOrEmpty(email))
             {
