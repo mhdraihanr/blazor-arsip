@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 using System.Security.Claims;
 using blazor_arsip.Services;
 using blazor_arsip.Models;
@@ -14,16 +16,13 @@ namespace blazor_arsip.Controllers
     public class AuthController : ControllerBase
     {
     private readonly blazor_arsip.Services.IAuthenticationService _authService;
-    private readonly IAuth0UserSyncService _auth0UserSyncService;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         blazor_arsip.Services.IAuthenticationService authService, 
-        IAuth0UserSyncService auth0UserSyncService,
         ILogger<AuthController> logger)
         {
             _authService = authService;
-            _auth0UserSyncService = auth0UserSyncService;
             _logger = logger;
         }
 
@@ -130,10 +129,16 @@ namespace blazor_arsip.Controllers
         [HttpGet("login-auth0")]
         public IActionResult LoginAuth0(string? returnUrl = null, string? connection = null)
         {
+            var targetReturnUrl = returnUrl;
+            if (string.IsNullOrEmpty(targetReturnUrl) || !Url.IsLocalUrl(targetReturnUrl))
+            {
+                targetReturnUrl = "/dashboard";
+            }
+
             var authenticationProperties = new AuthenticationProperties
             {
                 RedirectUri = Url.Action("Auth0Callback"),
-                Items = { ["returnUrl"] = returnUrl ?? "/dashboard" }
+                Items = { ["returnUrl"] = targetReturnUrl }
             };
 
             if (!string.IsNullOrEmpty(connection))
@@ -151,107 +156,28 @@ namespace blazor_arsip.Controllers
         }
 
         [HttpGet("auth0-callback")]
-        public async Task<IActionResult> Auth0Callback()
+        public IActionResult Auth0Callback()
         {
-            try
+            _logger.LogInformation("Auth0 callback fallback endpoint hit");
+
+            if (User.Identity?.IsAuthenticated == true)
             {
-                _logger.LogInformation("Auth0 callback initiated");
-                
-                // Check if user is already authenticated
-                if (User.Identity?.IsAuthenticated == true)
+                var returnUrl = HttpContext.Request.Query["returnUrl"].FirstOrDefault();
+
+                if (string.IsNullOrEmpty(returnUrl))
                 {
-                    _logger.LogInformation("User already authenticated, redirecting to dashboard");
                     return Redirect("/dashboard");
                 }
-                
-                // Get the result from the Auth0 authentication
-                var result = await HttpContext.AuthenticateAsync("Auth0");
-                
-                if (!result.Succeeded)
-                {
-                    var errorMessage = result.Failure?.Message ?? "Unknown error";
-                    
-                    // Log the specific error for debugging but don't always treat as failure
-                    _logger.LogInformation("Auth0 authentication result not successful: {Error}", errorMessage);
-                    
-                    // Check if this is a recoverable error or user cancellation
-                    if (errorMessage.Contains("access_denied") || errorMessage.Contains("user_cancelled"))
-                    {
-                        _logger.LogInformation("User cancelled authentication, redirecting to login");
-                        return Redirect("/login");
-                    }
-                    
-                    // For state or timing issues, try to check if we have valid claims anyway
-                    if (HttpContext.User?.Identity?.IsAuthenticated == true)
-                    {
-                        _logger.LogInformation("Found valid authentication despite callback failure, proceeding");
-                        // User is actually authenticated, redirect to dashboard
-                        return Redirect("/dashboard");
-                    }
-                    
-                    // Only show error for genuine authentication failures
-                    _logger.LogWarning("Genuine Auth0 authentication failure: {Error}", errorMessage);
-                    return Redirect("/login?error=auth0_failed");
-                }
 
-                _logger.LogInformation("Auth0 authentication succeeded, syncing user");
-                
-                // Sync user with database
-                var user = await _auth0UserSyncService.SyncUserAsync(result.Principal);
-                
-                _logger.LogInformation("User synced successfully: {Email}", user.Email);
-                
-                // Create local cookie with user information
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.Name),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim("PhotoUrl", user.PhotoUrl ?? string.Empty)
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
-                });
-
-                _logger.LogInformation("Local cookie created for user {Email}", user.Email);
-
-                // Get return URL from the original request or default to dashboard
-                var returnUrl = HttpContext.Request.Query["returnUrl"].FirstOrDefault();
-                if (string.IsNullOrEmpty(returnUrl) && result.Properties?.Items != null)
-                {
-                    result.Properties.Items.TryGetValue("returnUrl", out returnUrl);
-                }
-                
-                returnUrl = returnUrl ?? "/dashboard";
-                
-                // Ensure we redirect to a safe URL
                 if (!Url.IsLocalUrl(returnUrl))
                 {
-                    returnUrl = "/dashboard";
-                }
-                
-                _logger.LogInformation("Redirecting authenticated user to: {ReturnUrl}", returnUrl);
-                return Redirect(returnUrl);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during Auth0 callback");
-                
-                // Check if user is actually authenticated despite the exception
-                if (HttpContext.User?.Identity?.IsAuthenticated == true)
-                {
-                    _logger.LogInformation("User authenticated despite callback exception, redirecting to dashboard");
                     return Redirect("/dashboard");
                 }
-                
-                return Redirect("/login?error=auth0_error");
+
+                return Redirect(returnUrl);
             }
+
+            return Redirect("/login");
         }
     }
 }

@@ -10,10 +10,12 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +41,7 @@ builder.Services.AddScoped<IToastService, ToastService>();
 
 // Tambah CurrentUserService untuk menyediakan data user saat ini
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<blazor_arsip.Services.IAuthenticationService, blazor_arsip.Services.AuthenticationService>();
 
 // Add Auth0 User Sync Service
 builder.Services.AddScoped<IAuth0UserSyncService, Auth0UserSyncService>();
@@ -109,7 +111,7 @@ builder.Services.AddAuthentication(options =>
     options.GetClaimsFromUserInfoEndpoint = true;
     options.UsePkce = true;
     options.SkipUnrecognizedRequests = true;
-    
+
     // Fix state parameter and callback issues
     options.Events = new OpenIdConnectEvents
     {
@@ -144,11 +146,105 @@ builder.Services.AddAuthentication(options =>
             logger.LogInformation("Auth0 token validated successfully");
             return Task.CompletedTask;
         },
+        OnTicketReceived = async context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+            static bool IsLocalUrl(string? target)
+            {
+                if (string.IsNullOrEmpty(target))
+                {
+                    return false;
+                }
+
+                if (target.StartsWith('/'))
+                {
+                    return target.Length == 1 || (target[1] != '/' && target[1] != '\\');
+                }
+
+                if (target.Length > 1 && target[0] == '~' && target[1] == '/')
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            try
+            {
+                using var scope = context.HttpContext.RequestServices.CreateScope();
+                var userSyncService = scope.ServiceProvider.GetRequiredService<IAuth0UserSyncService>();
+
+                var principal = context.Principal;
+                if (principal == null)
+                {
+                    logger.LogWarning("Auth0 ticket received without principal");
+                    context.Response.Redirect("/login?error=auth0_error");
+                    context.HandleResponse();
+                    return;
+                }
+
+                var user = await userSyncService.SyncUserAsync(principal);
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim("PhotoUrl", user.PhotoUrl ?? string.Empty)
+                };
+
+                if (!string.IsNullOrEmpty(user.Auth0Id))
+                {
+                    claims.Add(new Claim("Auth0Id", user.Auth0Id));
+                }
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                context.Properties ??= new AuthenticationProperties();
+                context.Properties.IsPersistent = true;
+                context.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30);
+
+                await context.HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    claimsPrincipal,
+                    context.Properties);
+
+                await context.HttpContext.SignOutAsync("Auth0");
+
+                var returnUrl = context.Properties.Items != null &&
+                                 context.Properties.Items.TryGetValue("returnUrl", out var storedReturnUrl)
+                                     ? storedReturnUrl
+                                     : context.ReturnUri;
+
+                if (string.IsNullOrEmpty(returnUrl))
+                {
+                    returnUrl = "/dashboard";
+                }
+
+                if (!IsLocalUrl(returnUrl))
+                {
+                    returnUrl = "/dashboard";
+                }
+
+                logger.LogInformation("Auth0 ticket processed successfully, redirecting to {ReturnUrl}", returnUrl);
+
+                context.Response.Redirect(returnUrl);
+                context.HandleResponse();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while handling Auth0 ticket");
+                context.Response.Redirect("/login?error=auth0_error");
+                context.HandleResponse();
+            }
+        },
         OnRemoteFailure = context =>
         {
             var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("Auth0 remote failure event: {Error}", context.Failure?.Message);
-            
+
             // Check if user cancelled the authentication
             if (context.Failure?.Message?.Contains("access_denied") == true)
             {
@@ -157,9 +253,8 @@ builder.Services.AddAuthentication(options =>
             }
             else
             {
-                // Let the callback handle other errors
-                logger.LogInformation("Allowing callback to handle the error");
-                context.Response.Redirect("/api/auth/auth0-callback");
+                logger.LogInformation("Redirecting to login error page after remote failure");
+                context.Response.Redirect("/login?error=auth0_error");
             }
             context.HandleResponse();
             return Task.CompletedTask;

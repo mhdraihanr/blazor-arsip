@@ -29,11 +29,18 @@ public class Auth0UserSyncService : IAuth0UserSyncService
         try
         {
             var auth0Id = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var auth0IdFromCustomClaim = claimsPrincipal.FindFirst("Auth0Id")?.Value;
             var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
             var name = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value ?? 
                       claimsPrincipal.FindFirst("name")?.Value ?? 
                       email?.Split('@')[0] ?? "Unknown User";
             var picture = claimsPrincipal.FindFirst("picture")?.Value;
+
+            if (!string.IsNullOrEmpty(auth0IdFromCustomClaim) &&
+                (string.IsNullOrEmpty(auth0Id) || !auth0Id.Contains('|')))
+            {
+                auth0Id = auth0IdFromCustomClaim;
+            }
 
             if (string.IsNullOrEmpty(auth0Id) || string.IsNullOrEmpty(email))
             {
@@ -88,7 +95,9 @@ public class Auth0UserSyncService : IAuth0UserSyncService
                 }
             }
 
-            await UpdateUserLoginAsync(user);
+            // Update last login time
+            user.LastLoginAt = DateTime.UtcNow;
+            
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("User sync completed for {Email}", email);
@@ -113,9 +122,18 @@ public class Auth0UserSyncService : IAuth0UserSyncService
             .FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
     }
 
-    public async Task UpdateUserLoginAsync(User user)
+    public Task UpdateUserLoginAsync(User user)
     {
         user.LastLoginAt = DateTime.UtcNow;
-        _context.Users.Update(user);
+        
+        // Only call Update if the user is not already being tracked
+        // For new users that were just added, we don't need to call Update
+        var entry = _context.Entry(user);
+        if (entry.State == Microsoft.EntityFrameworkCore.EntityState.Detached)
+        {
+            _context.Users.Update(user);
+        }
+        
+        return Task.CompletedTask;
     }
 }
