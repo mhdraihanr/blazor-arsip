@@ -95,7 +95,9 @@ public class Auth0UserSyncService : IAuth0UserSyncService
                 }
             }
 
-            await UpdateUserLoginAsync(user);
+            // Update last login time
+            user.LastLoginAt = DateTime.UtcNow;
+            
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("User sync completed for {Email}", email);
@@ -120,9 +122,18 @@ public class Auth0UserSyncService : IAuth0UserSyncService
             .FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
     }
 
-    public async Task UpdateUserLoginAsync(User user)
+    public Task UpdateUserLoginAsync(User user)
     {
         user.LastLoginAt = DateTime.UtcNow;
-        _context.Users.Update(user);
+        
+        // Only call Update if the user is not already being tracked
+        // For new users that were just added, we don't need to call Update
+        var entry = _context.Entry(user);
+        if (entry.State == Microsoft.EntityFrameworkCore.EntityState.Detached)
+        {
+            _context.Users.Update(user);
+        }
+        
+        return Task.CompletedTask;
     }
 }
